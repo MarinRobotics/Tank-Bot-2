@@ -79,7 +79,10 @@ void competition_initialize() {}
  */
 void autonomous() {
 	if (pressed) {
-		jaw.move_relative(-550, 60);
+		jaw.tare_position();
+		jaw.move_absolute(550, 60);
+		pros::delay(1000);
+		jaw.move_absolute(0, 60);
 		pros::lcd::set_text(1, "center button pressed!");
 	}
 	else {
@@ -114,7 +117,7 @@ void opcontrol() {
 	//motor gearset for movement
 	int f = floor(300/127);
 	pros::lcd::initialize();
-
+	
 	//limiter variables
 	crane_rotate.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 	arm_turntableA.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
@@ -122,7 +125,10 @@ void opcontrol() {
 
 	//toggle variables
 	bool a_pressed = true;
-
+	
+	//set the jaw's current pos as 0
+	jaw.tare_position();
+	
 	while(true){
 
 	/*
@@ -242,12 +248,6 @@ void opcontrol() {
 		// 	left_front_mtr = int(right_y + right_x);
 		// 	left_back_mtr = int(right_y + right_x);
 
-		//reset other motors to keep them from drifting after switch
-		crane_rotate = 0;
-		arm_turntableA = 0;
-		arm_turntableB = 0;
-		jaw = 0;
-
 		//tank steer
 		//right
 		right_front_mtr = right_y;
@@ -255,7 +255,6 @@ void opcontrol() {
 		//left
 		left_front_mtr = left_y;
 		left_back_mtr = left_y;
-		}
 
 
  //yeyeye
@@ -286,67 +285,66 @@ if(master.get_digital(DIGITAL_LEFT)){
 } else{
 	crane_rotate = 0;
 }
-		//crane rotation code w/ limiters
-		if (crane_rotate.get_position() > -1950 && crane_rotate.get_position() < 1950) {
+	//crane rotation code w/ limiters
+	if (crane_rotate.get_position() > -1950 && crane_rotate.get_position() < 1950) {
+		crane_rotate = 0.5 * left_x;
+	} else if (crane_rotate.get_position() < -1950) {
+		if (left_x > 0) {
 			crane_rotate = 0.5 * left_x;
-		} else if (crane_rotate.get_position() < -1950) {
-			if (left_x > 0) {
-				crane_rotate = 0.5 * left_x;
-			} else {
-				crane_rotate = 0;
-			}
-		} else if (crane_rotate.get_position() > 1950) {
-			if (left_x < 0) {
-				crane_rotate = 0.5 * left_x;
-			} else {
-				crane_rotate = 0;
-			}
 		} else {
 			crane_rotate = 0;
 		}
+	} else if (crane_rotate.get_position() > 1950) {
+		if (left_x < 0) {
+			crane_rotate = 0.5 * left_x;
+		} else {
+			crane_rotate = 0;
+		}
+	} else {
+		crane_rotate = 0;
+	}
 
-		//crane up/down code w/ limiters
-		if (arm_turntableA.get_position() < 150 && arm_turntableA.get_position() > -1500) {
+	//crane up/down code w/ limiters
+	if (arm_turntableA.get_position() < 150 && arm_turntableA.get_position() > -1500) {
+		arm_turntableA = 0.5 * left_y;
+		arm_turntableB = 0.5 * left_y;
+		//pros::lcd::print(2, "normal");
+	} else if (arm_turntableA.get_position() > 200) {
+		if (left_y < 0) { //add another condition to make this work?
 			arm_turntableA = 0.5 * left_y;
 			arm_turntableB = 0.5 * left_y;
-			//pros::lcd::print(2, "normal");
-		} else if (arm_turntableA.get_position() > 200) {
-			if (left_y < 0) { //add another condition to make this work?
-				arm_turntableA = 0.5 * left_y;
-				arm_turntableB = 0.5 * left_y;
-				//pros::lcd::print(2, "too low");
-			} else {
-				arm_turntableA = 0;
-				arm_turntableB = 0;
-			}
-
-		} else if (arm_turntableA.get_position() < -1500) {
-			if (left_y > 0) {
-				arm_turntableA = 0.5 * right_y;
-				arm_turntableB = 0.5 * right_y;
-			} else {
-				arm_turntableA = 0;
-				arm_turntableB = 0;
-			}
-			//pros::lcd::print(2, "too high");
+			//pros::lcd::print(2, "too low");
 		} else {
 			arm_turntableA = 0;
 			arm_turntableB = 0;
 		}
+
+	} else if (arm_turntableA.get_position() < -1500) {
+		if (left_y > 0) {
+			arm_turntableA = 0.5 * right_y;
+			arm_turntableB = 0.5 * right_y;
+		} else {
+			arm_turntableA = 0;
+			arm_turntableB = 0;
+		}
+		//pros::lcd::print(2, "too high");
+	} else {
+		arm_turntableA = 0;
+		arm_turntableB = 0;
+	}
+	
 	bool right_front_bumper = master.get_digital(DIGITAL_R1);
 	bool right_back_bumper = master.get_digital(DIGITAL_R2);
 
   if (right_front_bumper) {
-		jaw = 50;
+		jaw.move_absolute(0, 100);
   }else if (right_back_bumper) {
-  	jaw = -50;
-  }else {
-		jaw = 0;
+  	jaw.move_absolute(175, 100);
   }
 
-	// pros::lcd::print(1, "%f", arm_turntableA.get_position());
+	pros::lcd::set_text(1, "Hello PROS User!");
 	// pros::lcd::print(3, "%d", left_y);
-
 
 	pros::delay(20);
 	}
+}
