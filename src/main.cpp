@@ -45,7 +45,6 @@ void initialize() {
 	arm_turntableA.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 	arm_turntableB.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
-
 	pros::lcd::register_btn1_cb(on_center_button);
 }
 
@@ -84,7 +83,10 @@ void autonomous() {
 		pros::lcd::set_text(1, "center button pressed!");
 	}
 	else {
-		jaw.move_relative(-550, 60);
+		jaw.tare_position();
+		jaw.move_absolute(550, 60);
+		pros::delay(1000);
+		jaw.move_absolute(0, 60);
 	}
 
 }
@@ -341,39 +343,6 @@ if(master.get_digital(DIGITAL_LEFT)){
   }else {
 		jaw = 0;
   }
-  pros::lcd::print(2, "1");
-	if(master.get_digital(DIGITAL_L1)){
-		pros::lcd::print(3, "2");
-		arm_turntableA = 80;
-		arm_turntableB = 80;
-	}if(master.get_digital(DIGITAL_L2)){
-		arm_turntableA = -80;
-		arm_turntableB = -80;
-	}else{
-		arm_turntableA = 0;
-		arm_turntableB = 0;
-	}
-
-
-//jaw rotation limiter
-	// if (jaw.get_position() > 5 && jaw.get_position() < -100) {
-	// 	if (left_front_bumper) {
-	// 		jaw = 50;
-	// 	} else if (left_back_bumper) {
-	// 		jaw = -50;
-	// 	} else {
-	// 		jaw = 0;
-	// 		jaw.move_velocity(0);
-	// 	}
-	// } else if (jaw.get_position() < 5) {
-	//
-	// 	if (left_back_bumper) {
-	// 		jaw = -50;
-	// 	} else {
-	// 		jaw = 0;
-	// 		jaw.move_velocity(0);
-	// 	}
-	// }
 
 	// pros::lcd::print(1, "%f", arm_turntableA.get_position());
 	// pros::lcd::print(3, "%d", left_y);
