@@ -2,9 +2,18 @@
 #include "main.h"
 
 extern pros::Controller master;
-extern control position; // struct controller = { int x = 0; int y = 0; } => struct control = { controller left; controller right; }
+extern struct control {
+  struct {
+    int x = 0;
+    int y = 0;
+  } left;
+  struct {
+    int x = 0;
+    int y = 0;
+  } right;
+} position;
 
-boolean pressed(String s) {
+bool btnpressed(std::string s) {
   if (s == "l1") return master.get_digital(DIGITAL_L1);
   if (s == "l2") return master.get_digital(DIGITAL_L2);
   if (s == "r1") return master.get_digital(DIGITAL_R1);
