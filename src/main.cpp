@@ -1,5 +1,5 @@
 #include "main.h"
-#include "helper.h"
+//#include "helper.h"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -102,7 +102,7 @@ void autonomous() {
 		jaw.tare_position();
 		jaw.move_absolute(550, 60);
 		pros::delay(1000);
-		jaw.move_absolute(0, 60);
+		jaw.move_absolute(-450, 60);
 	}
 }
 //I hate this robot so much. you dont understand.
@@ -186,8 +186,8 @@ void opcontrol() {
 		}
 
 		//crane up/down code w/ limiters
-		arm_turntableA = 0.5 * right_y;
-		arm_turntableB = 0.5 * right_y;
+		arm_turntableA = 0.5 * left_y;
+		arm_turntableB = 0.5 * left_y;
 		
 		bool left_front_bumper = master.get_digital(DIGITAL_L1);
 		bool left_back_bumper = master.get_digital(DIGITAL_L2);
