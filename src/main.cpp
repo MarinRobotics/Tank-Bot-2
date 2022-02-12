@@ -94,11 +94,6 @@ void autonomous() {
 		//awp A
 		//To Do: add a way to switch between auton modes by pressing a button
 
-		//rotate crane from diagonal to the right to over the goal
-		crane_rotate.tare_position();
-		crane_rotate.move_absolute(1200, 100);
-		pros::delay(1500);
-
 		//release preload rings into the goal
 		jaw.tare_position();
 		jaw.move_absolute(550, 60);
@@ -106,15 +101,12 @@ void autonomous() {
 		jaw.move_absolute(-450, 60);
 		pros::delay(1000);
 
-		//turns to the right
-		right_back_mtr.move_relative(-2000, -100);
-		right_front_mtr.move_relative(-2000, -100);
-
-		left_front_mtr.move_relative(2000, 100);
-		left_back_mtr.move_relative(2000, 100);
-		pros::delay(1000);
-
 		//pushes goal up the ramp
+		right_back_mtr.move_relative(4000, 100);
+		right_front_mtr.move_relative(4000, 100);
+
+		left_front_mtr.move_relative(4000, 100);
+		left_back_mtr.move_relative(4000, 100);
 
 }
 //I hate this robot so much. you dont understand.
