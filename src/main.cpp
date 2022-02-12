@@ -197,12 +197,13 @@ void opcontrol() {
 		f = floor(300/127); // 300 is the rpm of the current motor gearbox/127 is the max input the motors will take
 
 		//tank steer
+		float motor_mult = 1.5;
 		//right
-		right_front_mtr.move_velocity((right_y - right_x)*1.2);
-		right_back_mtr.move_velocity((right_y - right_x)*1.2);
+		right_front_mtr.move_velocity((right_y - right_x)*motor_mult);
+		right_back_mtr.move_velocity((right_y - right_x)*motor_mult);
 		//left
-		left_front_mtr.move_velocity((right_y + right_x)*1.2);
-		left_back_mtr.move_velocity((right_y + right_x)*1.2);
+		left_front_mtr.move_velocity((right_y + right_x)*motor_mult);
+		left_back_mtr.move_velocity((right_y + right_x)*motor_mult);
 
 		if(master.get_digital(DIGITAL_LEFT)){
 		  crane_rotate = 80;
