@@ -95,7 +95,7 @@ void autonomous() {
 		if (pressed){
 			//awp A
 			//rotate crane over goal
-			crane_rotate.move_relative(1000, 80);
+			crane_rotate.move_relative(550, 80);
 			pros::delay(1000);
 
 			//release preload rings into the goal
@@ -108,11 +108,12 @@ void autonomous() {
 		} else {
 			//awp b
 			//move to goal
-			right_back_mtr.move_relative(3000, 90);
-			right_front_mtr.move_relative(3000, 90);
+			right_back_mtr.move_relative(1000, 90);
+			right_front_mtr.move_relative(1000, 90);
 
-			left_back_mtr.move_relative(3000, 90);
-			left_front_mtr.move_relative(3000, 90);
+			left_back_mtr.move_relative(1000, 90);
+			left_front_mtr.move_relative(1000, 90);
+			pros::delay(2500);
 
 			//release the rings from jaw
 			jaw.tare_position();
