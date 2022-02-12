@@ -119,6 +119,11 @@ void autonomous() {
 			crane_rotate.move_relative(-350, 90);
 			pros::delay(3000);
 
+			//lower arm
+			arm_turntableB.move_relative(400, 90);
+			arm_turntableA.move_relative(400, 90);
+			pros::delay(1500);
+
 			//release the rings from jaw
 			jaw.tare_position();
 			jaw.move_absolute(550, 60);
