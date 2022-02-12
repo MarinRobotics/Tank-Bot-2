@@ -53,7 +53,7 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+	//pros::lcd::set_text(1, "Hello PROS User!");
 	jaw.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	arm_turntableA.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 	arm_turntableB.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
@@ -175,11 +175,11 @@ void opcontrol() {
 
 		//tank steer
 		//right
-		right_front_mtr = right_y - right_x;
-		right_back_mtr = right_y - right_x;
+		right_front_mtr.move_velocity(right_y - right_x);
+		right_back_mtr.move_velocity(right_y - right_x);
 		//left
-		left_front_mtr = right_y + right_x;
-		left_back_mtr = right_y + right_x;
+		left_front_mtr.move_velocity(right_y + right_x);
+		left_back_mtr.move_velocity(right_y + right_x);
 
 		if(master.get_digital(DIGITAL_LEFT)){
 		  crane_rotate = 80;
@@ -220,7 +220,7 @@ void opcontrol() {
 	  	jaw.move_absolute(175, 100);
 	  }
 
-		pros::lcd::set_text(1, "Hello PROS User!");
+		//pros::lcd::set_text(1, "Hello PROS User!");
 		// pros::lcd::print(3, "%d", left_y);
 
 		pros::delay(20);
