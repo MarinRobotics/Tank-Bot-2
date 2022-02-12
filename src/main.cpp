@@ -104,11 +104,11 @@ void autonomous() {
 		jaw.move_absolute(550, 60);
 		pros::delay(1000);
 		jaw.move_absolute(-450, 60);
-
 		pros::delay(1000);
+
 		//turns to the right
-		right_back_mtr.move_relative(-2000, 100);
-		right_front_mtr.move_relative(-2000, 100);
+		right_back_mtr.move_relative(-2000, -100);
+		right_front_mtr.move_relative(-2000, -100);
 
 		left_front_mtr.move_relative(2000, 100);
 		left_back_mtr.move_relative(2000, 100);
@@ -160,6 +160,16 @@ void opcontrol() {
 		left_y = master.get_analog(ANALOG_LEFT_Y);
 		left_x = master.get_analog(ANALOG_LEFT_X);
 
+		//print stick inputs
+		pros::lcd::print(0, "right x: %d", right_x);
+		pros::lcd::print(1, "right y: %d", right_y);
+
+		pros::lcd::print(2, "left x: %d", left_x);
+		pros::lcd::print(3, "left y: %d", left_y);
+
+		//print motor power
+		pros::lcd::print(5, "right motors: %d", right_y - right_x);
+		pros::lcd::print(6, "left motors: %d", right_y + right_x);
 
 		f = floor(300/127); // 300 is the rpm of the current motor gearbox/127 is the max input the motors will take
 
