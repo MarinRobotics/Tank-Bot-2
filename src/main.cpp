@@ -17,9 +17,9 @@ bool pressed = false;
 void on_center_button() {
 	pressed = !pressed;
 	if (pressed) {
-		pros::lcd::print(4, "AWP-A selected (ramp)");
-	} else {
 		pros::lcd::print(4, "AWP-B selected (on line)");
+	} else {
+		pros::lcd::print(4, "AWP-A selected (ramp)");
 	}
 
 	struct control {
@@ -93,19 +93,6 @@ void competition_initialize() {}
 void autonomous() {
 
 		if (pressed){
-			//awp A
-			//rotate crane over goal
-			crane_rotate.move_relative(550, 80);
-			pros::delay(1000);
-
-			//release preload rings into the goal
-			jaw.tare_position();
-			jaw.move_absolute(550, 60);
-			pros::delay(1000);
-			jaw.move_absolute(-450, 60);
-			pros::delay(1000);
-
-		} else {
 			//awp b
 			//move to goal
 			right_back_mtr.move_relative(2750, 90);
@@ -116,12 +103,12 @@ void autonomous() {
 			pros::delay(2500);
 
 			//rotate crane over the goal
-			crane_rotate.move_relative(-350, 90);
-			pros::delay(3000);
+			crane_rotate.move_relative(-700, 90);
+			pros::delay(1000);
 
 			//lower arm
-			arm_turntableB.move_relative(400, 90);
-			arm_turntableA.move_relative(400, 90);
+			arm_turntableB.move_relative(700, 90);
+			arm_turntableA.move_relative(700, 90);
 			pros::delay(1500);
 
 			//release the rings from jaw
@@ -131,6 +118,16 @@ void autonomous() {
 			jaw.move_absolute(-450, 60);
 			pros::delay(1000);
 
+
+		} else {
+			//awp A
+
+			//release preload rings into the goal
+			jaw.tare_position();
+			jaw.move_absolute(550, 60);
+			pros::delay(1000);
+			jaw.move_absolute(-450, 60);
+			pros::delay(1000);
 		}
 }
 //I hate this robot so much. you dont understand.
