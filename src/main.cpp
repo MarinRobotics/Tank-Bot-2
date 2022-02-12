@@ -155,10 +155,16 @@ void opcontrol() {
 
 	while(true){
 
+		//get stick inputs
 		right_x = master.get_analog(ANALOG_RIGHT_X);
 		right_y = master.get_analog(ANALOG_RIGHT_Y);
 		left_y = master.get_analog(ANALOG_LEFT_Y);
 		left_x = master.get_analog(ANALOG_LEFT_X);
+
+
+		//get bumper presses
+		bool left_front_bumper = master.get_digital(DIGITAL_L1);
+		bool left_back_bumper = master.get_digital(DIGITAL_L2);
 
 		//print stick inputs
 		pros::lcd::print(0, "right x: %d", right_x);
@@ -170,6 +176,7 @@ void opcontrol() {
 		//print motor power
 		pros::lcd::print(5, "right motors: %d", right_y - right_x);
 		pros::lcd::print(6, "left motors: %d", right_y + right_x);
+
 
 		f = floor(300/127); // 300 is the rpm of the current motor gearbox/127 is the max input the motors will take
 
@@ -211,8 +218,6 @@ void opcontrol() {
 		arm_turntableA = 0.5 * left_y;
 		arm_turntableB = 0.5 * left_y;
 
-		bool left_front_bumper = master.get_digital(DIGITAL_L1);
-		bool left_back_bumper = master.get_digital(DIGITAL_L2);
 
 	  if (left_front_bumper) {
 			jaw.move_absolute(0, 100);
