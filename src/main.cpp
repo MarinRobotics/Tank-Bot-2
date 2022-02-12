@@ -92,27 +92,13 @@ void competition_initialize() {}
  */
 void autonomous() {
 		//awp-b variables
-		int right_move = 3000;
-		int left_move = 2750;
+		int right_move = 2800;
+		int left_move = 2550;
 
 		int right_speed = 90;
 		int left_speed = 90;
 
 		if (pressed){
-
-			//awp A
-			//rotate crane over goal
-			// crane_rotate.move_relative(550, 80);
-			// pros::delay(1000);
-
-			//release preload rings into the goal
-			jaw.tare_position();
-			jaw.move_absolute(550, 60);
-			pros::delay(1000);
-			jaw.move_absolute(-450, 60);
-			pros::delay(1000);
-
-		} else {
 			//awp b
 			//move to goal
 			right_back_mtr.move_relative(right_move, right_speed);
@@ -127,6 +113,20 @@ void autonomous() {
 			pros::delay(1000);
 
 			//release the rings from jaw
+			jaw.tare_position();
+			jaw.move_absolute(550, 60);
+			pros::delay(1000);
+			jaw.move_absolute(-450, 60);
+			pros::delay(1000);
+			
+		} else {
+
+			//awp A
+			//rotate crane over goal
+			// crane_rotate.move_relative(550, 80);
+			// pros::delay(1000);
+
+			//release preload rings into the goal
 			jaw.tare_position();
 			jaw.move_absolute(550, 60);
 			pros::delay(1000);
