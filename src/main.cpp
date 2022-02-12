@@ -21,7 +21,7 @@ void on_center_button() {
 	} else {
 		pros::lcd::clear_line(2);
 	}
-	
+
 	struct control {
 		struct {
 			int x = 0;
@@ -91,19 +91,27 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	if (pressed) {
-		jaw.tare_position();
-		jaw.move_absolute(550, 60);
-		pros::delay(1000);
-		jaw.move_absolute(0, 60);
-		pros::lcd::set_text(1, "center button pressed!");
-	}
-	else {
+		//awp A
+		//To Do: add a way to switch between auton modes by pressing a button
+
+		//rotate crane from diagonal to the right to over the goal
+		crane_rotate.move_relative(70, 60);
+
+		//release preload rings into the goal
 		jaw.tare_position();
 		jaw.move_absolute(550, 60);
 		pros::delay(1000);
 		jaw.move_absolute(-450, 60);
-	}
+
+		//turns to the right
+		right_back_mtr.move_relative(100, 127);
+		right_front_mtr.move_relative(100, 127);
+
+		left_front_mtr.move_relative(-100, 127);
+		left_back_mtr.move_relative(-100, 127);
+
+		//pushes goal up the ramp
+
 }
 //I hate this robot so much. you dont understand.
 //and people say I dont comment my code
@@ -129,7 +137,7 @@ void opcontrol() {
 	//motor gearset for movement
 	int f = floor(300/127);
 	pros::lcd::initialize();
-	
+
 	//limiter variables
 	crane_rotate.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 	arm_turntableA.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
@@ -137,10 +145,10 @@ void opcontrol() {
 
 	//toggle variables
 	bool a_pressed = true;
-	
+
 	//set the jaw's current pos as 0
 	jaw.tare_position();
-	
+
 	while(true){
 
 		right_x = master.get_analog(ANALOG_RIGHT_X);
@@ -188,7 +196,7 @@ void opcontrol() {
 		//crane up/down code w/ limiters
 		arm_turntableA = 0.5 * left_y;
 		arm_turntableB = 0.5 * left_y;
-		
+
 		bool left_front_bumper = master.get_digital(DIGITAL_L1);
 		bool left_back_bumper = master.get_digital(DIGITAL_L2);
 
