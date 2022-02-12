@@ -93,40 +93,40 @@ void competition_initialize() {}
 void autonomous() {
 
 		if (pressed){
-		//awp b
-		//move to goal
-		right_back_mtr.move_relative(3000, 90);
-		right_front_mtr.move_relative(3000, 90);
+			//awp A
+			//rotate crane over goal
+			crane_rotate.move_relative(1000, 80);
+			pros::delay(1000);
 
-		left_back_mtr.move_relative(3000, 90);
-		left_front_mtr.move_relative(3000, 90);
-
-		//release the rings from jaw
-		jaw.tare_position();
-		jaw.move_absolute(550, 60);
-		pros::delay(1000);
-		jaw.move_absolute(-450, 60);
-		pros::delay(1000);
-
-		//push goal off line
-		right_back_mtr.move_relative(1200, 90);
-		right_front_mtr.move_relative(1200, 90);
-
-		left_back_mtr.move_relative(3000, 90);
-		left_front_mtr.move_relative(3000, 90);
+			//release preload rings into the goal
+			jaw.tare_position();
+			jaw.move_absolute(550, 60);
+			pros::delay(1000);
+			jaw.move_absolute(-450, 60);
+			pros::delay(1000);
 
 		} else {
-		//awp A
-		//rotate crane over goal
-		crane_rotate.move_relative(1000, 80);
-		pros::delay(1000);
+			//awp b
+			//move to goal
+			right_back_mtr.move_relative(3000, 90);
+			right_front_mtr.move_relative(3000, 90);
 
-		//release preload rings into the goal
-		jaw.tare_position();
-		jaw.move_absolute(550, 60);
-		pros::delay(1000);
-		jaw.move_absolute(-450, 60);
-		pros::delay(1000);
+			left_back_mtr.move_relative(3000, 90);
+			left_front_mtr.move_relative(3000, 90);
+
+			//release the rings from jaw
+			jaw.tare_position();
+			jaw.move_absolute(550, 60);
+			pros::delay(1000);
+			jaw.move_absolute(-450, 60);
+			pros::delay(1000);
+
+			//push goal off line
+			right_back_mtr.move_relative(1200, 90);
+			right_front_mtr.move_relative(1200, 90);
+
+			left_back_mtr.move_relative(3000, 90);
+			left_front_mtr.move_relative(3000, 90);
 		}
 }
 //I hate this robot so much. you dont understand.
