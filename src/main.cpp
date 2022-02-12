@@ -108,12 +108,16 @@ void autonomous() {
 		} else {
 			//awp b
 			//move to goal
-			right_back_mtr.move_relative(1000, 90);
-			right_front_mtr.move_relative(1000, 90);
+			right_back_mtr.move_relative(2250, 90);
+			right_front_mtr.move_relative(2250, 90);
 
-			left_back_mtr.move_relative(1000, 90);
-			left_front_mtr.move_relative(1000, 90);
+			left_back_mtr.move_relative(2250, 90);
+			left_front_mtr.move_relative(2250, 90);
 			pros::delay(2500);
+
+			//rotate crane over the goal
+			crane_rotate.move_relative(-350, 90);
+			pros::delay(1000);
 
 			//release the rings from jaw
 			jaw.tare_position();
@@ -122,12 +126,6 @@ void autonomous() {
 			jaw.move_absolute(-450, 60);
 			pros::delay(1000);
 
-			//push goal off line
-			right_back_mtr.move_relative(1200, 90);
-			right_front_mtr.move_relative(1200, 90);
-
-			left_back_mtr.move_relative(3000, 90);
-			left_front_mtr.move_relative(3000, 90);
 		}
 }
 //I hate this robot so much. you dont understand.
