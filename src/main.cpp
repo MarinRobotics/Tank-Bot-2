@@ -91,41 +91,42 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+		//awp-b variables
+		int right_move = 3000;
+		int left_move = 2750;
+
+		int right_speed = 90;
+		int left_speed = 90;
 
 		if (pressed){
-			//awp b
-			//move to goal
-			right_back_mtr.move_relative(2750, 90);
-			right_front_mtr.move_relative(2750, 90);
 
-			left_back_mtr.move_relative(2750, 90);
-			left_front_mtr.move_relative(2750, 90);
-			pros::delay(2500);
-
-			//rotate crane over the goal
-			crane_rotate.move_relative(-700, 90);
-			pros::delay(1000);
-
-			//lower arm
-			arm_turntableB.move_relative(700, 90);
-			arm_turntableA.move_relative(700, 90);
-			pros::delay(1500);
-
-			//release the rings from jaw
-			jaw.tare_position();
-			jaw.move_absolute(550, 60);
-			pros::delay(1000);
-			jaw.move_absolute(-450, 60);
-			pros::delay(1000);
-
-
-		} else {
 			//awp A
 			//rotate crane over goal
 			// crane_rotate.move_relative(550, 80);
 			// pros::delay(1000);
 
 			//release preload rings into the goal
+			jaw.tare_position();
+			jaw.move_absolute(550, 60);
+			pros::delay(1000);
+			jaw.move_absolute(-450, 60);
+			pros::delay(1000);
+
+		} else {
+			//awp b
+			//move to goal
+			right_back_mtr.move_relative(right_move, right_speed);
+			right_front_mtr.move_relative(right_move, right_speed);
+
+			left_back_mtr.move_relative(left_move, left_speed);
+			left_front_mtr.move_relative(left_move, left_speed);
+			pros::delay(2500);
+
+			//rotate crane over the goal
+			crane_rotate.move_relative(-800, 90);
+			pros::delay(1000);
+
+			//release the rings from jaw
 			jaw.tare_position();
 			jaw.move_absolute(550, 60);
 			pros::delay(1000);
