@@ -95,7 +95,9 @@ void autonomous() {
 		//To Do: add a way to switch between auton modes by pressing a button
 
 		//rotate crane from diagonal to the right to over the goal
-		crane_rotate.move_relative(70, 60);
+		crane_rotate.tare_position();
+		crane_rotate.move_absolute(1200, 100);
+		pros::delay(1500);
 
 		//release preload rings into the goal
 		jaw.tare_position();
@@ -103,12 +105,14 @@ void autonomous() {
 		pros::delay(1000);
 		jaw.move_absolute(-450, 60);
 
+		pros::delay(1000);
 		//turns to the right
-		right_back_mtr.move_relative(100, 127);
-		right_front_mtr.move_relative(100, 127);
+		right_back_mtr.move_relative(-2000, 100);
+		right_front_mtr.move_relative(-2000, 100);
 
-		left_front_mtr.move_relative(-100, 127);
-		left_back_mtr.move_relative(-100, 127);
+		left_front_mtr.move_relative(2000, 100);
+		left_back_mtr.move_relative(2000, 100);
+		pros::delay(1000);
 
 		//pushes goal up the ramp
 
