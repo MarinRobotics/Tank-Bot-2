@@ -121,6 +121,9 @@ void autonomous() {
 
 		} else {
 			//awp A
+			//rotate crane over goal
+			// crane_rotate.move_relative(550, 80);
+			// pros::delay(1000);
 
 			//release preload rings into the goal
 			jaw.tare_position();
@@ -195,11 +198,11 @@ void opcontrol() {
 
 		//tank steer
 		//right
-		right_front_mtr.move_velocity(right_y - right_x);
-		right_back_mtr.move_velocity(right_y - right_x);
+		right_front_mtr.move_velocity((right_y - right_x)*1.2);
+		right_back_mtr.move_velocity((right_y - right_x)*1.2);
 		//left
-		left_front_mtr.move_velocity(right_y + right_x);
-		left_back_mtr.move_velocity(right_y + right_x);
+		left_front_mtr.move_velocity((right_y + right_x)*1.2);
+		left_back_mtr.move_velocity((right_y + right_x)*1.2);
 
 		if(master.get_digital(DIGITAL_LEFT)){
 		  crane_rotate = 80;
@@ -210,16 +213,16 @@ void opcontrol() {
 		}
 		//crane rotation code w/ limiters
 		if (crane_rotate.get_position() > -1950 && crane_rotate.get_position() < 1950) {
-			crane_rotate = 0.5 * left_x;
+			crane_rotate = 0.8 * left_x;
 		} else if (crane_rotate.get_position() < -1950) {
 			if (left_x > 0) {
-					crane_rotate = 0.5 * left_x;
+					crane_rotate = 0.8 * left_x;
 			} else {
 				crane_rotate = 0;
 			}
 		} else if (crane_rotate.get_position() > 1950) {
 			if (left_x < 0) {
-				crane_rotate = 0.5 * left_x;
+				crane_rotate = 0.8 * left_x;
 			} else {
 				crane_rotate = 0;
 			}
@@ -228,8 +231,8 @@ void opcontrol() {
 		}
 
 		//crane up/down code w/ limiters
-		arm_turntableA = 0.5 * left_y;
-		arm_turntableB = 0.5 * left_y;
+		arm_turntableA = 0.8 * left_y;
+		arm_turntableB = 0.8 * left_y;
 
 
 	  if (left_front_bumper) {
