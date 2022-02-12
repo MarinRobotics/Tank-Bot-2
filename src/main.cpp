@@ -17,9 +17,9 @@ bool pressed = false;
 void on_center_button() {
 	pressed = !pressed;
 	if (pressed) {
-		pros::lcd::print(2, "Auton 2 selected %d", pressed);
+		pros::lcd::print(4, "AWP-A selected (ramp)");
 	} else {
-		pros::lcd::clear_line(2);
+		pros::lcd::print(4, "AWP-B selected (on line)");
 	}
 
 	struct control {
@@ -91,8 +91,32 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+
+		if (pressed){
+		//awp b
+		//move to goal
+		right_back_mtr.move_relative(3000, 90);
+		right_front_mtr.move_relative(3000, 90);
+
+		left_back_mtr.move_relative(3000, 90);
+		left_front_mtr.move_relative(3000, 90);
+
+		//release the rings from jaw
+		jaw.tare_position();
+		jaw.move_absolute(550, 60);
+		pros::delay(1000);
+		jaw.move_absolute(-450, 60);
+		pros::delay(1000);
+
+		//push goal off line
+		right_back_mtr.move_relative(1200, 90);
+		right_front_mtr.move_relative(1200, 90);
+
+		left_back_mtr.move_relative(3000, 90);
+		left_front_mtr.move_relative(3000, 90);
+
+		} else {
 		//awp A
-		//To Do: add a way to switch between auton modes by pressing a button
 		//rotate crane over goal
 		crane_rotate.move_relative(1000, 80);
 		pros::delay(1000);
@@ -103,13 +127,7 @@ void autonomous() {
 		pros::delay(1000);
 		jaw.move_absolute(-450, 60);
 		pros::delay(1000);
-
-		//awp b
-		// right_back_mtr.move_relative(3000, 90);
-		// right_front_mtr.move_relative(3000, 90);
-		//
-		// left_back_mtr.move_relative(3000, 90);
-		// left_front_mtr.move_relative(3000, 90);
+		}
 }
 //I hate this robot so much. you dont understand.
 //and people say I dont comment my code
