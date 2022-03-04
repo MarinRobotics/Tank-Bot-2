@@ -3,6 +3,7 @@
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
+//motor definitions - drive
 pros::Motor left_front_mtr(11);
 pros::Motor left_back_mtr(18);
 pros::Motor right_front_mtr(3,true);
@@ -10,8 +11,11 @@ pros::Motor right_back_mtr(10,true);
 pros::Motor arm_turntableA(2);
 pros::Motor arm_turntableB(9, true);
 
+//motor definitions - arm and jaw
 pros::Motor jaw (19);
 pros::Motor crane_rotate (20);
+
+//awp selection
 bool pressed = false;
 
 void on_center_button() {
@@ -22,6 +26,7 @@ void on_center_button() {
 		pros::lcd::print(4, "AWP-A selected (ramp)");
 	}
 
+	//helper struct
 	struct control {
 		struct {
 			int x = 0;
@@ -33,9 +38,11 @@ void on_center_button() {
 		} right;
 	} position;
 
+	//define drive motor speed variables by side
 	int right_speed = 0;
 	int left_speed = 0;
 
+	//define controller variables
 	int right_x;
 	int right_y;
 	int left_x;
@@ -53,7 +60,7 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	//pros::lcd::set_text(1, "Hello PROS User!");
+	//set mtr brake modes
 	jaw.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	arm_turntableA.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 	arm_turntableB.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
@@ -103,7 +110,6 @@ void autonomous() {
 			//move to goal
 			right_back_mtr.move_relative(right_move, right_speed);
 			right_front_mtr.move_relative(right_move, right_speed);
-
 			left_back_mtr.move_relative(left_move, left_speed);
 			left_front_mtr.move_relative(left_move, left_speed);
 			pros::delay(2500);
@@ -118,14 +124,10 @@ void autonomous() {
 			pros::delay(1000);
 			jaw.move_absolute(-450, 60);
 			pros::delay(1000);
-			
+
 		} else {
 
 			//awp A
-			//rotate crane over goal
-			// crane_rotate.move_relative(550, 80);
-			// pros::delay(1000);
-
 			//release preload rings into the goal
 			jaw.tare_position();
 			jaw.move_absolute(550, 60);
@@ -155,6 +157,7 @@ void opcontrol() {
 	int right_y;
 	int left_y;
 	int left_x;
+
 	//motor gearset for movement
 	int f = floor(300/127);
 	pros::lcd::initialize();
@@ -183,36 +186,28 @@ void opcontrol() {
 		bool left_front_bumper = master.get_digital(DIGITAL_L1);
 		bool left_back_bumper = master.get_digital(DIGITAL_L2);
 
-		//print stick inputs
+		//print stick inputs - debug
 		pros::lcd::print(0, "right x: %d", right_x);
 		pros::lcd::print(1, "right y: %d", right_y);
 
 		pros::lcd::print(2, "left x: %d", left_x);
 		pros::lcd::print(3, "left y: %d", left_y);
 
-		//print motor power
+		//print motor power - debug
 		pros::lcd::print(5, "right motors: %d", right_y - right_x);
 		pros::lcd::print(6, "left motors: %d", right_y + right_x);
 
+		//one-stick tank steer
+		float motor_mult = 1.5; //motor speed multiplier
 
-		f = floor(300/127); // 300 is the rpm of the current motor gearbox/127 is the max input the motors will take
-
-		//tank steer
-		float motor_mult = 1.5;
-		//right
+		//right drive
 		right_front_mtr.move_velocity((right_y - right_x)*motor_mult);
 		right_back_mtr.move_velocity((right_y - right_x)*motor_mult);
-		//left
+
+		//left drive
 		left_front_mtr.move_velocity((right_y + right_x)*motor_mult);
 		left_back_mtr.move_velocity((right_y + right_x)*motor_mult);
 
-		if(master.get_digital(DIGITAL_LEFT)){
-		  crane_rotate = 80;
-		} else if(master.get_digital(DIGITAL_RIGHT)){
-			crane_rotate = -80;
-		} else{
-			crane_rotate = 0;
-		}
 		//crane rotation code w/ limiters
 		if (crane_rotate.get_position() > -1950 && crane_rotate.get_position() < 1950) {
 			crane_rotate = 0.8 * left_x;
@@ -236,15 +231,11 @@ void opcontrol() {
 		arm_turntableA = 0.8 * left_y;
 		arm_turntableB = 0.8 * left_y;
 
-
 	  if (left_front_bumper) {
 			jaw.move_absolute(0, 100);
 	  }else if (left_back_bumper) {
 	  	jaw.move_absolute(175, 100);
 	  }
-
-		//pros::lcd::set_text(1, "Hello PROS User!");
-		// pros::lcd::print(3, "%d", left_y);
 
 		pros::delay(20);
 	}
