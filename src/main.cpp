@@ -15,6 +15,50 @@ pros::Motor arm_turntableB(9, true);
 pros::Motor jaw (19);
 pros::Motor crane_rotate (20);
 
+
+//vision sensor stuff
+//define vision sensor and signatures
+int sensport = 5;
+pros::Vision FrontSensor(sensport);
+
+//signatures
+pros::vision_signature_s_t neutral_mogii_sig =
+FrontSensor.signature_from_utility(1, 3811, 4219, 4014, -3553, -3215, -3384, 3.000, 0);
+
+//objects
+pros::vision_object_s_t nutral_mogii[3];
+
+//auton vision test to make sure it works
+void vision_test () {
+ pros::lcd::initialize();
+
+ while (true) {
+	 pros::lcd::clear();
+	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 2, nutral_mogii);
+	 pros::screen::print(TEXT_MEDIUM, 3, "mogus objct 0: (%u, %u, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord);
+	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 1: (%u, %u)", nutral_mogii[1].x_middle_coord, nutral_mogii[1].y_middle_coord);
+	 pros::screen::print(TEXT_MEDIUM, 5, "object count: %d", FrontSensor.get_object_count());
+
+	 pros::screen::set_pen(COLOR_YELLOW);
+	 int x_0 = round((nutral_mogii[0].x_middle_coord - (nutral_mogii[0].width*0.5)) * (480/640));
+	 int y_0 = round(200 - (nutral_mogii[0].top_coord * 0.5));
+	 pros::screen::print(TEXT_MEDIUM, 6, "top right coord: (%d, %d)", x_0,y_0);
+
+
+	 int x_1 = round((nutral_mogii[0].x_middle_coord - (nutral_mogii[0].width*0.5)) + nutral_mogii[0].width) * (240/640);
+	 int y_1 = round(200 - ((nutral_mogii[0].top_coord + nutral_mogii[0].height) * 0.5));
+	 pros::screen::print(TEXT_MEDIUM, 7, "bottom left coord: (%d, %d)", x_1, y_1);
+
+	 pros::screen::print(TEXT_MEDIUM, 7,"x middle coord %d", nutral_mogii[0].x_middle_coord);
+
+
+	 pros::screen::fill_rect(1, y_0, 100, y_1);
+	 pros::delay(20);
+
+   }
+}
+
+
 //awp selection
 bool pressed = false;
 
@@ -158,8 +202,6 @@ void opcontrol() {
 	int left_y;
 	int left_x;
 
-	//motor gearset for movement
-	int f = floor(300/127);
 	pros::lcd::initialize();
 
 	//limiter variables
@@ -180,7 +222,6 @@ void opcontrol() {
 		right_y = master.get_analog(ANALOG_RIGHT_Y);
 		left_y = master.get_analog(ANALOG_LEFT_Y);
 		left_x = master.get_analog(ANALOG_LEFT_X);
-
 
 		//get bumper presses
 		bool left_front_bumper = master.get_digital(DIGITAL_L1);
