@@ -170,14 +170,14 @@ void autonomous() {
 			pros::delay(1000);
 
 		} else {
-
+			vision_test();
 			//awp A
 			//release preload rings into the goal
-			jaw.tare_position();
-			jaw.move_absolute(550, 60);
-			pros::delay(1000);
-			jaw.move_absolute(-450, 60);
-			pros::delay(1000);
+			// jaw.tare_position();
+			// jaw.move_absolute(550, 60);
+			// pros::delay(1000);
+			// jaw.move_absolute(-450, 60);
+			// pros::delay(1000);
 		}
 }
 //I hate this robot so much. you dont understand.
