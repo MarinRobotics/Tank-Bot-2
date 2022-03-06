@@ -18,12 +18,12 @@ pros::Motor crane_rotate (20);
 
 //vision sensor stuff
 //define vision sensor and signatures
-int sensport = 5;
+int sensport = 8;
 pros::Vision FrontSensor(sensport);
 
 //signatures
 pros::vision_signature_s_t neutral_mogii_sig =
-FrontSensor.signature_from_utility(1, 3811, 4219, 4014, -3553, -3215, -3384, 3.000, 0);
+FrontSensor.signature_from_utility(1, 2449, 2703, 2576, -3221, -3007, -3114, 3.000, 0);
 
 //objects
 pros::vision_object_s_t nutral_mogii[3]; //3 is the max amount of detected neutral mogii
