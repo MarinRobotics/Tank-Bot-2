@@ -26,7 +26,7 @@ pros::vision_signature_s_t neutral_mogii_sig =
 FrontSensor.signature_from_utility(1, 3811, 4219, 4014, -3553, -3215, -3384, 3.000, 0);
 
 //objects
-pros::vision_object_s_t nutral_mogii[3];
+pros::vision_object_s_t nutral_mogii[3]; //3 is the max amount of detected neutral mogii
 
 //auton vision test to make sure it works
 void vision_test () {
@@ -34,25 +34,25 @@ void vision_test () {
 
  while (true) {
 	 pros::lcd::clear();
-	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 2, nutral_mogii);
-	 pros::screen::print(TEXT_MEDIUM, 3, "mogus objct 0: (%u, %u, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord);
-	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 1: (%u, %u)", nutral_mogii[1].x_middle_coord, nutral_mogii[1].y_middle_coord);
-	 pros::screen::print(TEXT_MEDIUM, 5, "object count: %d", FrontSensor.get_object_count());
+	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 3, nutral_mogii); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
+	 pros::screen::print(TEXT_MEDIUM, 3, "mogus object 0: (%u, %u, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
+	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 1: (%u, %u, %d)", nutral_mogii[1].x_middle_coord, nutral_mogii[1].y_middle_coord); //prints the details of the second mogii object in array on the screen
+	 pros::screen::print(TEXT_MEDIUM, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
 
 	 pros::screen::set_pen(COLOR_YELLOW);
-	 int x_0 = round((nutral_mogii[0].x_middle_coord - (nutral_mogii[0].width*0.5)) * (480/640));
-	 int y_0 = round(200 - (nutral_mogii[0].top_coord * 0.5));
-	 pros::screen::print(TEXT_MEDIUM, 6, "top right coord: (%d, %d)", x_0,y_0);
+	 int x_0 = round((nutral_mogii[0].x_middle_coord - (nutral_mogii[0].width*0.5)) * (480/640)); //this is creating an x dimension for a rectangle on the brain's screen. 480/640 converts from the cameras pixel dimension to the brain's.
+	 int y_0 = round(200 - (nutral_mogii[0].top_coord * 0.5)); //creates the y dimension for the rectangle. These two points make up the top right coord
+	 pros::screen::print(TEXT_MEDIUM, 6, "top right coord: (%d, %d)", x_0,y_0); //print the top right coord of the first obj's signature in array
 
 
-	 int x_1 = round((nutral_mogii[0].x_middle_coord - (nutral_mogii[0].width*0.5)) + nutral_mogii[0].width) * (240/640);
+	 int x_1 = round((nutral_mogii[0].x_middle_coord - (nutral_mogii[0].width*0.5)) + nutral_mogii[0].width) * (240/640);//why is this different from the first one? idk...
 	 int y_1 = round(200 - ((nutral_mogii[0].top_coord + nutral_mogii[0].height) * 0.5));
 	 pros::screen::print(TEXT_MEDIUM, 7, "bottom left coord: (%d, %d)", x_1, y_1);
 
-	 pros::screen::print(TEXT_MEDIUM, 7,"x middle coord %d", nutral_mogii[0].x_middle_coord);
+	 pros::screen::print(TEXT_MEDIUM, 8,"x middle coord %d", nutral_mogii[0].x_middle_coord);
 
 
-	 pros::screen::fill_rect(1, y_0, 100, y_1);
+	 pros::screen::fill_rect(1, y_0, 100, y_1);//draw the actual rectangles representing signtures seen by the vision sensor
 	 pros::delay(20);
 
    }
