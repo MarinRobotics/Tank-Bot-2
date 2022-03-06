@@ -58,19 +58,19 @@ void vision_test () {
 	 //check in y dimension
 	 if (nutral_mogii[0].y_middle_coord > 10){ //NOTE: 10 may be too small a number. Check w/ testing
 		 jaw.move_relative(-10, 50); //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 1,"jaw moving up");
-	 }
-	 if (nutral_mogii[0].y_middle_coord < 10) {
-		 jaw.move_relative(10, 50); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 1,"jaw moving down");
+	 }
+	 if (nutral_mogii[0].y_middle_coord < -10) {
+		 jaw.move_relative(10, 50); //NOTE: check if this is moving in the right direction
+		 pros::screen::print(TEXT_LARGE, 1,"jaw moving up");
 	 }
 	 if (nutral_mogii[0].x_middle_coord > 10){
 		 crane_rotate.move_absolute(100, 50); //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 1,"arm moving right");
-	 }
-	 if (nutral_mogii[0].x_middle_coord < 10){
-		 crane_rotate.move_absolute(-100, 50); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving left");
+	 }
+	 if (nutral_mogii[0].x_middle_coord < -10){
+		 crane_rotate.move_absolute(-100, 50); //NOTE: check if this is moving in the right direction
+		 pros::screen::print(TEXT_LARGE, 1,"arm moving right");
 	 } else {
 		 pros::screen::print(TEXT_LARGE, 1,"centered");
 	 }
