@@ -68,7 +68,7 @@ void vision_test () {
 	 if (nutral_mogii[0].x_middle_coord < 10){
 		 crane_rotate.move_absolute(-100, 50); //NOTE: check if this is moving in the right direction
 	 } else {
-
+		 pros::screen::print(TEXT_LARGE, 1,"centered");
 	 }
 
 
