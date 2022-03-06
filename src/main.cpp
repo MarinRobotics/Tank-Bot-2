@@ -53,6 +53,20 @@ void vision_test () {
 
 
 	 pros::screen::fill_rect(1, y_0, 100, y_1);//draw the actual rectangles representing signtures seen by the vision sensor
+
+	 //move the arm up and down to keep the signature centered
+	 if (nutral_mogii[0].x_middle_coord > 10){
+		 jaw.move_relative(10, 50);
+	 }
+	 if (nutral_mogii[0].x_middle_coord < 10){
+		 jaw.move_relative(10, 50);
+	 } else {
+		 crane_rotate.move_absolute(100, 50);
+		 pros::delay(100);
+		 crane_rotate.move_absolute(-100, 50);
+	 }
+
+	 
 	 pros::delay(20);
 
    }
