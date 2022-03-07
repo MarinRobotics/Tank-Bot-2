@@ -31,6 +31,8 @@ pros::vision_object_s_t nutral_mogii[3]; //3 is the max amount of detected neutr
 //auton vision test to make sure it works
 void vision_test () {
  pros::lcd::initialize();
+ bool isDoingStuff_UD = false;
+ bool isDoingStuff_RO = false;
 
  while (true) {
 	 pros::lcd::clear();
@@ -43,27 +45,30 @@ void vision_test () {
 	 pros::screen::set_pen(COLOR_YELLOW);
 	 //move the arm up and down to keep the signature centered
 	 //check in y dimension
-	 if (nutral_mogii[0].y_middle_coord > 10){ //NOTE: 10 may be too small a number. Check w/ testing
+	 if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
 		 arm_turntableA.move_relative(45, 40); //NOTE: check if this is moving in the right direction
 		 arm_turntableB.move_relative(45, 40); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving down");
-	 } if (nutral_mogii[0].y_middle_coord < -10) {
+		 isDoingStuff_UD = true;
+	 } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
 		 arm_turntableA.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
 		 arm_turntableB.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving up");
+		 isDoingStuff_UD = true;
 	 } else {
 		 pros::screen::print(TEXT_LARGE, 1,"centered");
+		 isDoingStuff_UD = false;
 	 }
 
-	 if (nutral_mogii[0].x_middle_coord > 10){
-		 crane_rotate.move_relative(45, 40); //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 2,"arm moving left");
-	 } if (nutral_mogii[0].x_middle_coord < -10){
-		 crane_rotate.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 2,"arm moving right");
-	 } else {
-		 pros::screen::print(TEXT_LARGE, 2,"centered");
-	 }
+	 // if (nutral_mogii[0].x_middle_coord > 10){
+		//  crane_rotate.move_relative(45, 40); //NOTE: check if this is moving in the right direction
+		//  pros::screen::print(TEXT_LARGE, 2,"arm moving left");
+	 // } if (nutral_mogii[0].x_middle_coord < -10){
+		//  crane_rotate.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
+		//  pros::screen::print(TEXT_LARGE, 2,"arm moving right");
+	 // } else {
+		//  pros::screen::print(TEXT_LARGE, 2,"centered");
+	 // }
 
 	 pros::delay(15);
 
