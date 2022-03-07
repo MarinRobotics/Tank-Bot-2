@@ -35,8 +35,8 @@ void vision_test () {
  while (true) {
 	 pros::lcd::clear();
 	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 3, nutral_mogii); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
-	 pros::screen::print(TEXT_MEDIUM, 3, "mogus object 0: (%u, %u, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
-	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 1: (%u, %u, %d)", nutral_mogii[1].x_middle_coord, nutral_mogii[1].y_middle_coord); //prints the details of the second mogii object in array on the screen
+	 pros::screen::print(TEXT_MEDIUM, 3, "mogus object 0: (%d, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
+	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 1: (%d, %d)", nutral_mogii[1].x_middle_coord, nutral_mogii[1].y_middle_coord); //prints the details of the second mogii object in array on the screen
 	 pros::screen::print(TEXT_MEDIUM, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
 
 	 pros::screen::set_pen(COLOR_YELLOW);
@@ -52,7 +52,7 @@ void vision_test () {
 	 pros::screen::print(TEXT_MEDIUM, 8,"x middle coord %d", nutral_mogii[0].x_middle_coord);
 
 
-	 pros::screen::fill_rect(1, y_0, 100, y_1);//draw the actual rectangles representing signtures seen by the vision sensor
+	 pros::screen::fill_rect(x_0, y_0, x_1, y_1);//draw the actual rectangles representing signtures seen by the vision sensor
 
 	 //move the arm up and down to keep the signature centered
 	 //check in y dimension
@@ -60,21 +60,22 @@ void vision_test () {
 		 arm_turntableA.move_relative(45, 40); //NOTE: check if this is moving in the right direction
 		 arm_turntableB.move_relative(45, 40); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving down");
-	 }
-	 if (nutral_mogii[0].y_middle_coord < -10) {
+	 } if (nutral_mogii[0].y_middle_coord < -10) {
 		 arm_turntableA.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
 		 arm_turntableB.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving up");
-	 }
-	 if (nutral_mogii[0].x_middle_coord > 10){
-		 crane_rotate.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 2,"arm moving left");
-	 }
-	 if (nutral_mogii[0].x_middle_coord < -10){
-		 crane_rotate.move_relative(45, 40); //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 2,"arm moving right");
 	 } else {
 		 pros::screen::print(TEXT_LARGE, 1,"centered");
+	 }
+
+	 if (nutral_mogii[0].x_middle_coord > 10){
+		 crane_rotate.move_relative(45, 40); //NOTE: check if this is moving in the right direction
+		 pros::screen::print(TEXT_LARGE, 2,"arm moving left");
+	 } if (nutral_mogii[0].x_middle_coord < -10){
+		 crane_rotate.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
+		 pros::screen::print(TEXT_LARGE, 2,"arm moving right");
+	 } else {
+		 pros::screen::print(TEXT_LARGE, 2,"centered");
 	 }
 
 	 pros::delay(15);
