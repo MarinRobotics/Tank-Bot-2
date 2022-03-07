@@ -61,11 +61,11 @@ void vision_test () {
 		//  isDoingStuff_UD = false;
 	 // }
 
-	 if (nutral_mogii[0].x_middle_coord > 10 && !isDoingStuff_RO){ //NOTE: 10 may be too small a number. Check w/ testing
+	 if (nutral_mogii[0].x_middle_coord > 8 && !isDoingStuff_RO){ //NOTE: 10 may be too small a number. Check w/ testing
 		 crane_rotate = 50; //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 2,"arm going right");
 		 isDoingStuff_RO = true;
-	 } if (nutral_mogii[0].x_middle_coord < -10 && !isDoingStuff_RO) {
+	 } if (nutral_mogii[0].x_middle_coord < -8 && !isDoingStuff_RO) {
 		 crane_rotate = -50; //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 2,"arm going left");
 		 isDoingStuff_RO = true;
