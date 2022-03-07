@@ -46,16 +46,18 @@ void vision_test () {
 	 //move the arm up and down to keep the signature centered
 	 //check in y dimension
 	 if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
-		 arm_turntableA.move_relative(45, 40); //NOTE: check if this is moving in the right direction
-		 arm_turntableB.move_relative(45, 40); //NOTE: check if this is moving in the right direction
+		 arm_turntableA.move_velocity(45); //NOTE: check if this is moving in the right direction
+		 arm_turntableB.move_velocity(45); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving down");
 		 isDoingStuff_UD = true;
 	 } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
-		 arm_turntableA.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
-		 arm_turntableB.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
+		 arm_turntableA.move_velocity(-45); //NOTE: check if this is moving in the right direction
+		 arm_turntableB.move_velocity(-45); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving up");
 		 isDoingStuff_UD = true;
 	 } else {
+		 arm_turntableA.move_velocity(0);
+		 arm_turntableB.move_velocity(0);
 		 pros::screen::print(TEXT_LARGE, 1,"centered");
 		 isDoingStuff_UD = false;
 	 }
