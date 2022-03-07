@@ -35,25 +35,12 @@ void vision_test () {
  while (true) {
 	 pros::lcd::clear();
 	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 3, nutral_mogii); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
+	 pros::screen::set_pen(COLOR_BLUE_VIOLET);
 	 pros::screen::print(TEXT_MEDIUM, 3, "mogus object 0: (%d, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
 	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 1: (%d, %d)", nutral_mogii[1].x_middle_coord, nutral_mogii[1].y_middle_coord); //prints the details of the second mogii object in array on the screen
 	 pros::screen::print(TEXT_MEDIUM, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
 
 	 pros::screen::set_pen(COLOR_YELLOW);
-	 int x_0 = round((nutral_mogii[0].x_middle_coord - (nutral_mogii[0].width*0.5)) * (480/640)); //this is creating an x dimension for a rectangle on the brain's screen. 480/640 converts from the cameras pixel dimension to the brain's.
-	 int y_0 = round(200 - (nutral_mogii[0].top_coord * 0.5)); //creates the y dimension for the rectangle. These two points make up the top right coord
-	 pros::screen::print(TEXT_MEDIUM, 6, "top right coord: (%d, %d)", x_0,y_0); //print the top right coord of the first obj's signature in array
-
-
-	 int x_1 = round((nutral_mogii[0].x_middle_coord - (nutral_mogii[0].width*0.5)) + nutral_mogii[0].width) * (240/640);//why is this different from the first one? idk...
-	 int y_1 = round(200 - ((nutral_mogii[0].top_coord + nutral_mogii[0].height) * 0.5));
-	 pros::screen::print(TEXT_MEDIUM, 7, "bottom left coord: (%d, %d)", x_1, y_1);
-
-	 pros::screen::print(TEXT_MEDIUM, 8,"x middle coord %d", nutral_mogii[0].x_middle_coord);
-
-
-	 pros::screen::fill_rect(x_0, y_0, x_1, y_1);//draw the actual rectangles representing signtures seen by the vision sensor
-
 	 //move the arm up and down to keep the signature centered
 	 //check in y dimension
 	 if (nutral_mogii[0].y_middle_coord > 10){ //NOTE: 10 may be too small a number. Check w/ testing
