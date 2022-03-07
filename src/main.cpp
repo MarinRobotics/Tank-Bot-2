@@ -38,40 +38,39 @@ void vision_test () {
 	 pros::lcd::clear();
 	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 3, nutral_mogii); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
 	 pros::screen::set_pen(COLOR_BLUE_VIOLET);
-	 pros::screen::print(TEXT_MEDIUM, 3, "mogus object 0: (%d, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
-	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 1: (%d, %d)", nutral_mogii[1].x_middle_coord, nutral_mogii[1].y_middle_coord); //prints the details of the second mogii object in array on the screen
+	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 0: (%d, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
 	 pros::screen::print(TEXT_MEDIUM, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
 
 	 pros::screen::set_pen(COLOR_YELLOW);
 	 //move the arm up and down to keep the signature centered
 	 //check in y dimension
-	 if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
-		 arm_turntableA = 100;
-		 arm_turntableB = 100;
-		 pros::screen::print(TEXT_LARGE, 1,"arm moving down");
-		 isDoingStuff_UD = true;
-	 } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
-		 arm_turntableA = -100;
-		 arm_turntableB = -100;
-		 pros::screen::print(TEXT_LARGE, 1,"arm moving up");
-		 isDoingStuff_UD = true;
-	 } else {
-		 arm_turntableA.move_velocity(0);
-		 arm_turntableB.move_velocity(0);
-		 pros::screen::print(TEXT_LARGE, 1,"centered");
-		 isDoingStuff_UD = false;
-	 }
+	 // if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
+		//  arm_turntableA = 100;
+		//  arm_turntableB = 100;
+		//  pros::screen::print(TEXT_LARGE, 1,"arm moving down");
+		//  isDoingStuff_UD = true;
+	 // } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
+		//  arm_turntableA = -100;
+		//  arm_turntableB = -100;
+		//  pros::screen::print(TEXT_LARGE, 1,"arm moving up");
+		//  isDoingStuff_UD = true;
+	 // } else {
+		//  arm_turntableA = 0;
+		//  arm_turntableB = 0;
+		//  pros::screen::print(TEXT_LARGE, 1,"centered");
+		//  isDoingStuff_UD = false;
+	 // }
 
 	 if (nutral_mogii[0].x_middle_coord > 10 && !isDoingStuff_RO){ //NOTE: 10 may be too small a number. Check w/ testing
-		 crane_rotate = 100; //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 1,"arm going right");
+		 crane_rotate = 50; //NOTE: check if this is moving in the right direction
+		 pros::screen::print(TEXT_LARGE, 2,"arm going right");
 		 isDoingStuff_RO = true;
 	 } if (nutral_mogii[0].x_middle_coord < -10 && !isDoingStuff_RO) {
-		 crane_rotate = -100; //NOTE: check if this is moving in the right direction
+		 crane_rotate = -50; //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 2,"arm going left");
 		 isDoingStuff_RO = true;
 	 } else {
-		 crane_rotate.move_velocity(0);
+		 crane_rotate = 0;
 		 pros::screen::print(TEXT_LARGE, 2,"centered");
 		 isDoingStuff_RO = false;
 	 }
