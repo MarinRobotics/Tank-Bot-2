@@ -44,23 +44,24 @@ void vision_test () {
 	 pros::screen::set_pen(COLOR_YELLOW);
 	 //move the arm up and down to keep the signature centered
 	 //check in y dimension
-	 // if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
-		//  arm_turntableA = 100;
-		//  arm_turntableB = 100;
-		//  pros::screen::print(TEXT_LARGE, 1,"arm moving down");
-		//  isDoingStuff_UD = true;
-	 // } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
-		//  arm_turntableA = -100;
-		//  arm_turntableB = -100;
-		//  pros::screen::print(TEXT_LARGE, 1,"arm moving up");
-		//  isDoingStuff_UD = true;
-	 // } else {
-		//  arm_turntableA = 0;
-		//  arm_turntableB = 0;
-		//  pros::screen::print(TEXT_LARGE, 1,"centered");
-		//  isDoingStuff_UD = false;
-	 // }
+	 if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
+		 arm_turntableA = 100;
+		 arm_turntableB = 100;
+		 pros::screen::print(TEXT_LARGE, 1,"arm moving down");
+		 isDoingStuff_UD = true;
+	 } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
+		 arm_turntableA = -100;
+		 arm_turntableB = -100;
+		 pros::screen::print(TEXT_LARGE, 1,"arm moving up");
+		 isDoingStuff_UD = true;
+	 } else {
+		 arm_turntableA = 0;
+		 arm_turntableB = 0;
+		 pros::screen::print(TEXT_LARGE, 1,"centered");
+		 isDoingStuff_UD = false;
+	 }
 
+	 //check in x dimension - doesn't currently work
 	 if (nutral_mogii[0].x_middle_coord > 8 && !isDoingStuff_RO){ //NOTE: 10 may be too small a number. Check w/ testing
 		 crane_rotate = 50; //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_LARGE, 2,"arm going right");
