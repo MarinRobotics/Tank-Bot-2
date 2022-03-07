@@ -46,13 +46,13 @@ void vision_test () {
 	 //move the arm up and down to keep the signature centered
 	 //check in y dimension
 	 if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
-		 arm_turntableA = 100; //NOTE: check if this is moving in the right direction
-		 arm_turntableB = 100; //NOTE: check if this is moving in the right direction
+		 arm_turntableA = 100;
+		 arm_turntableB = 100;
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving down");
 		 isDoingStuff_UD = true;
 	 } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
-		 arm_turntableA = -100; //NOTE: check if this is moving in the right direction
-		 arm_turntableB = -100; //NOTE: check if this is moving in the right direction
+		 arm_turntableA = -100;
+		 arm_turntableB = -100;
 		 pros::screen::print(TEXT_LARGE, 1,"arm moving up");
 		 isDoingStuff_UD = true;
 	 } else {
@@ -62,15 +62,19 @@ void vision_test () {
 		 isDoingStuff_UD = false;
 	 }
 
-	 // if (nutral_mogii[0].x_middle_coord > 10){
-		//  crane_rotate.move_relative(45, 40); //NOTE: check if this is moving in the right direction
-		//  pros::screen::print(TEXT_LARGE, 2,"arm moving left");
-	 // } if (nutral_mogii[0].x_middle_coord < -10){
-		//  crane_rotate.move_relative(-45, 40); //NOTE: check if this is moving in the right direction
-		//  pros::screen::print(TEXT_LARGE, 2,"arm moving right");
-	 // } else {
-		//  pros::screen::print(TEXT_LARGE, 2,"centered");
-	 // }
+	 if (nutral_mogii[0].x_middle_coord > 10 && !isDoingStuff_RO){ //NOTE: 10 may be too small a number. Check w/ testing
+		 crane_rotate = 100; //NOTE: check if this is moving in the right direction
+		 pros::screen::print(TEXT_LARGE, 1,"arm going right");
+		 isDoingStuff_RO = true;
+	 } if (nutral_mogii[0].x_middle_coord < -10 && !isDoingStuff_RO) {
+		 crane_rotate = -100; //NOTE: check if this is moving in the right direction
+		 pros::screen::print(TEXT_LARGE, 2,"arm going left");
+		 isDoingStuff_RO = true;
+	 } else {
+		 crane_rotate.move_velocity(0);
+		 pros::screen::print(TEXT_LARGE, 2,"centered");
+		 isDoingStuff_RO = false;
+	 }
 
 	 pros::delay(15);
 
