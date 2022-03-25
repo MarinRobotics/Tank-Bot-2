@@ -11,8 +11,8 @@ pros::Motor right_back_mtr(10,true);
 pros::Motor arm_turntableA(2);
 pros::Motor arm_turntableB(9, true);
 
-//motor definitions - arm and jaw
-pros::Motor jaw (19);
+//motor definitions - trigger and jaw
+pros::Motor trigger (19);
 pros::Motor crane_rotate (20);
 
 
@@ -128,7 +128,6 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	//set mtr brake modes
-	jaw.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	arm_turntableA.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 	arm_turntableB.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
@@ -165,44 +164,9 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-		//awp-b variables
-		int right_move = 2800;
-		int left_move = 2550;
-
-		int right_speed = 90;
-		int left_speed = 90;
-
-		if (pressed){
-			//awp b
-			//move to goal
-			right_back_mtr.move_relative(right_move, right_speed);
-			right_front_mtr.move_relative(right_move, right_speed);
-			left_back_mtr.move_relative(left_move, left_speed);
-			left_front_mtr.move_relative(left_move, left_speed);
-			pros::delay(2500);
-
-			//rotate crane over the goal
-			crane_rotate.move_relative(-800, 90);
-			pros::delay(1000);
-
-			//release the rings from jaw
-			jaw.tare_position();
-			jaw.move_absolute(550, 60);
-			pros::delay(1000);
-			jaw.move_absolute(-450, 60);
-			pros::delay(1000);
-
-		} else {
-			vision_test();
-			//awp A
-			//release preload rings into the goal
-			// jaw.tare_position();
-			// jaw.move_absolute(550, 60);
-			// pros::delay(1000);
-			// jaw.move_absolute(-450, 60);
-			// pros::delay(1000);
-		}
+		vision_test();
 }
+
 //I hate this robot so much. you dont understand.
 //and people say I dont comment my code
 /**
@@ -230,13 +194,7 @@ void opcontrol() {
 	//limiter variables
 	crane_rotate.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 	arm_turntableA.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-	jaw.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 
-	//toggle variables
-	bool a_pressed = true;
-
-	//set the jaw's current pos as 0
-	jaw.tare_position();
 
 	while(true){
 
@@ -247,8 +205,8 @@ void opcontrol() {
 		left_x = master.get_analog(ANALOG_LEFT_X);
 
 		//get bumper presses
-		bool left_front_bumper = master.get_digital(DIGITAL_L1);
-		bool left_back_bumper = master.get_digital(DIGITAL_L2);
+		bool right_front_bumper = master.get_digital(DIGITAL_R1);
+		bool right_back_bumper = master.get_digital(DIGITAL_R2);
 
 		//print stick inputs - debug
 		pros::lcd::print(0, "right x: %d", right_x);
@@ -295,10 +253,10 @@ void opcontrol() {
 		arm_turntableA = 0.8 * left_y;
 		arm_turntableB = 0.8 * left_y;
 
-	  if (left_front_bumper) {
-			jaw.move_absolute(0, 100);
-	  }else if (left_back_bumper) {
-	  	jaw.move_absolute(175, 100);
+	  if (right_front_bumper) {
+			trigger = 127;
+	  }else if (right_back_bumper) {
+	  	trigger = 0;
 	  }
 
 		pros::delay(20);
