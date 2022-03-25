@@ -28,6 +28,15 @@ FrontSensor.signature_from_utility(1, 2449, 2703, 2576, -3221, -3007, -3114, 3.0
 //objects
 pros::vision_object_s_t nutral_mogii[3]; //3 is the max amount of detected neutral mogii
 
+void setTrigMode(int speedMult, int fireMode){
+    if (fireMode == 1){
+      trigger.move_velocity(127*speedMult);
+    }
+    else {
+      trigger.move_velocity(0);
+    }
+}
+
 //auton vision test to make sure it works
 void vision_test () {
  pros::lcd::initialize();
@@ -88,9 +97,9 @@ bool pressed = false;
 void on_center_button() {
 	pressed = !pressed;
 	if (pressed) {
-		pros::lcd::print(4, "AWP-B selected (on line)");
+		pros::lcd::print(4, "Autonomous Targeting");
 	} else {
-		pros::lcd::print(4, "AWP-A selected (ramp)");
+		pros::lcd::print(4, "Manual Targeting");
 	}
 
 	//helper struct
@@ -164,7 +173,8 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-		vision_test();
+  setTrigMode(1, 1);
+  //vision_test();
 }
 
 //I hate this robot so much. you dont understand.
@@ -207,17 +217,6 @@ void opcontrol() {
 		//get bumper presses
 		bool right_front_bumper = master.get_digital(DIGITAL_R1);
 		bool right_back_bumper = master.get_digital(DIGITAL_R2);
-
-		//print stick inputs - debug
-		pros::lcd::print(0, "right x: %d", right_x);
-		pros::lcd::print(1, "right y: %d", right_y);
-
-		pros::lcd::print(2, "left x: %d", left_x);
-		pros::lcd::print(3, "left y: %d", left_y);
-
-		//print motor power - debug
-		pros::lcd::print(5, "right motors: %d", right_y - right_x);
-		pros::lcd::print(6, "left motors: %d", right_y + right_x);
 
 		//one-stick tank steer
 		float motor_mult = 1.5; //motor speed multiplier
