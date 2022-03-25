@@ -28,12 +28,17 @@ FrontSensor.signature_from_utility(1, 2449, 2703, 2576, -3221, -3007, -3114, 3.0
 //objects
 pros::vision_object_s_t nutral_mogii[3]; //3 is the max amount of detected neutral mogii
 
+//this sets the trigger's firing mode in autonomous
 void setTrigMode(int speedMult, int fireMode){
+  pros::lcd::initialize();
     if (fireMode == 1){
-      trigger.move_velocity(127*speedMult);
+      trigger = 127;
+      pros::lcd::print(1, "firing");
     }
+
     else {
       trigger.move_velocity(0);
+      pros::lcd::print(1, "standby");
     }
 }
 
