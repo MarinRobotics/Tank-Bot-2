@@ -206,8 +206,6 @@ void opcontrol() {
   //tare trigger pos for single-shot
   trigger.tare_position();
 
-  //trigger modes
-  bool AutoMode = false;
 
   //initialize lcd for prints
 	pros::lcd::initialize();
@@ -227,7 +225,6 @@ void opcontrol() {
 
 		//get bumper presses
 		bool right_front_bumper = master.get_digital(DIGITAL_R1);
-		bool right_back_bumper = master.get_digital(DIGITAL_R2);
 
 		//one-stick tank steer
 		float motor_mult = 1.5; //motor speed multiplier
@@ -264,12 +261,8 @@ void opcontrol() {
 		arm_turntableB = 0.8 * left_y;
 
     //firing modes
-	  if (right_front_bumper && AutoMode == false) { //single shot
+	  if (right_front_bumper) { //single shot
 			trigger.move_absolute(180, 127);
-	  }else if (right_front_bumper && AutoMode){ //automatic
-      trigger.move_relative(180, 127);
-    }else if (right_back_bumper) { //switch firing modes
-	  	AutoMode = !AutoMode;
 	  }
 
 		pros::delay(20);
