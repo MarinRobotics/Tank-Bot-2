@@ -178,7 +178,6 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  setTrigMode(1, 1);
   //vision_test();
 }
 
@@ -204,6 +203,13 @@ void opcontrol() {
 	int left_y;
 	int left_x;
 
+  //tare trigger pos for single-shot
+  trigger.tare_position();
+
+  //trigger modes
+  bool AutoMode = false;
+
+  //initialize lcd for prints
 	pros::lcd::initialize();
 
 	//limiter variables
@@ -257,10 +263,13 @@ void opcontrol() {
 		arm_turntableA = 0.8 * left_y;
 		arm_turntableB = 0.8 * left_y;
 
-	  if (right_front_bumper) {
-			trigger = 127;
-	  }else if (right_back_bumper) {
-	  	trigger = 0;
+    //firing modes
+	  if (right_front_bumper && AutoMode == false) { //single shot
+			trigger.move_absolute(180, 127);
+	  }else if (right_front_bumper && AutoMode){ //automatic
+      trigger.move_relative(180, 127);
+    }else if (right_back_bumper) { //switch firing modes
+	  	AutoMode = !AutoMode;
 	  }
 
 		pros::delay(20);
