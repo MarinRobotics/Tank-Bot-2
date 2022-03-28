@@ -206,6 +206,8 @@ void opcontrol() {
   //tare trigger pos for single-shot
   trigger.tare_position();
 
+  //if the trigger is moving
+  bool isFiring = false;
 
   //initialize lcd for prints
 	pros::lcd::initialize();
@@ -261,10 +263,17 @@ void opcontrol() {
 		arm_turntableB = 0.8 * left_y;
 
     //firing modes
-	  if (right_front_bumper) { //single shot
-			trigger.move_absolute(180, 127);
+	  if (right_front_bumper && isFiring == false) { //single shot
+			trigger.move_relative(-900, 127);
+      isFiring = true;
+      pros::delay(60);
 	  }
-
+    else if (!right_front_bumper && isFiring){
+      isFiring = false;
+    }
+    if (master.get_digital(DIGITAL_A)){
+      trigger.move_absolute(0, 127);
+    }
 		pros::delay(20);
 	}
 }
