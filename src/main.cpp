@@ -128,8 +128,6 @@ void on_center_button() {
 	int right_y;
 	int left_x;
 	int left_y;
-	int controller_reversed = -1;
-	bool a_pressed = false;
 }
 
 
@@ -206,7 +204,7 @@ void opcontrol() {
   //tare trigger pos for single-shot
   trigger.tare_position();
 
-  //if the trigger is moving
+  //if the trigger is in the act of firing
   bool isFiring = false;
 
   //initialize lcd for prints
