@@ -266,13 +266,13 @@ void opcontrol() {
 	  if (right_front_bumper && isFiring == false) { //single shot
 			trigger.move_relative(-900, 127);
       isFiring = true;
-      pros::delay(60);
+      pros::delay(450);
 	  }
     else if (!right_front_bumper && isFiring){
       isFiring = false;
     }
     if (master.get_digital(DIGITAL_A)){
-      trigger.move_absolute(0, 127);
+      trigger.move_absolute(0, -127);
     }
 		pros::delay(20);
 	}
