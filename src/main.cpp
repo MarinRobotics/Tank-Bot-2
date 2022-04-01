@@ -23,12 +23,15 @@ pros::Vision FrontSensor(sensport);
 
 //signatures
 pros::vision_signature_s_t neutral_mogii_sig =
-FrontSensor.signature_from_utility(1, 2449, 2703, 2576, -3221, -3007, -3114, 3.000, 0);
+FrontSensor.signature_from_utility(1, 7301, 7873, 7588, -515, 177, -168, 3.000, 0);
+//neutral sig: 1, 2449, 2703, 2576, -3221, -3007, -3114, 3.000, 0
+//red sig: 1, 7301, 7873, 7588, -515, 177, -168, 3.000, 0
+
 
 //objects
 pros::vision_object_s_t nutral_mogii[3]; //3 is the max amount of detected neutral mogii
 
-//this sets the trigger's firing mode in autonomous
+//this sets the trigger's firing mode
 void setTrigMode(int speedMult, int fireMode){
   pros::lcd::initialize();
     if (fireMode == 1){
@@ -47,46 +50,48 @@ void vision_test () {
  pros::lcd::initialize();
  bool isDoingStuff_UD = false;
  bool isDoingStuff_RO = false;
+ pros::screen::set_pen(COLOR_BLUE_VIOLET);
+ pros::screen::print(TEXT_MEDIUM, 1, "Heloehfoiew");
 
  while (true) {
 	 pros::lcd::clear();
 	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 3, nutral_mogii); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
 	 pros::screen::set_pen(COLOR_BLUE_VIOLET);
-	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 0: (%d, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
-	 pros::screen::print(TEXT_MEDIUM, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
+	 pros::screen::print(TEXT_SMALL, 4, "mogus object 0: (%d, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
+	 pros::screen::print(TEXT_SMALL, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
 
 	 pros::screen::set_pen(COLOR_YELLOW);
 	 //move the arm up and down to keep the signature centered
 	 //check in y dimension
 	 if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
-		 arm_turntableA = 100;
-		 arm_turntableB = 100;
-		 pros::screen::print(TEXT_LARGE, 1,"arm moving down");
+		 arm_turntableA = 75;
+		 arm_turntableB = 75;
+		 pros::screen::print(TEXT_SMALL, 1,"arm moving down");
 		 isDoingStuff_UD = true;
 	 } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
-		 arm_turntableA = -100;
-		 arm_turntableB = -100;
-		 pros::screen::print(TEXT_LARGE, 1,"arm moving up");
+		 arm_turntableA = -75;
+		 arm_turntableB = -75;
+		 pros::screen::print(TEXT_SMALL, 1,"arm moving up");
 		 isDoingStuff_UD = true;
 	 } else {
 		 arm_turntableA = 0;
 		 arm_turntableB = 0;
-		 pros::screen::print(TEXT_LARGE, 1,"centered");
+		 pros::screen::print(TEXT_SMALL, 1,"centered");
 		 isDoingStuff_UD = false;
 	 }
 
 	 //check in x dimension - doesn't currently work
 	 if (nutral_mogii[0].x_middle_coord > 8 && !isDoingStuff_RO){ //NOTE: 10 may be too small a number. Check w/ testing
 		 crane_rotate = 50; //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 2,"arm going right");
+		 pros::screen::print(TEXT_SMALL, 2,"arm going right");
 		 isDoingStuff_RO = true;
 	 } if (nutral_mogii[0].x_middle_coord < -8 && !isDoingStuff_RO) {
 		 crane_rotate = -50; //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 2,"arm going left");
+		 pros::screen::print(TEXT_SMALL, 2,"arm going left");
 		 isDoingStuff_RO = true;
 	 } else {
 		 crane_rotate = 0;
-		 pros::screen::print(TEXT_LARGE, 2,"centered");
+		 pros::screen::print(TEXT_SMALL, 2,"centered");
 		 isDoingStuff_RO = false;
 	 }
 
@@ -176,7 +181,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  //vision_test();
+  vision_test();
 }
 
 //I hate this robot so much. you dont understand.
