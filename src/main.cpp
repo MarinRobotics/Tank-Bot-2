@@ -23,9 +23,10 @@ pros::Vision FrontSensor(sensport);
 
 //signatures
 pros::vision_signature_s_t neutral_mogii_sig =
-FrontSensor.signature_from_utility(1, 7301, 7873, 7588, -515, 177, -168, 3.000, 0);
+FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 0);
 //neutral sig: 1, 2449, 2703, 2576, -3221, -3007, -3114, 3.000, 0
 //red sig: 1, 7301, 7873, 7588, -515, 177, -168, 3.000, 0
+//other red sig: 1, 8163, 9675, 8918, -595, 177, -208, 3.000, 0
 
 
 //objects
@@ -48,10 +49,8 @@ void setTrigMode(int speedMult, int fireMode){
 //auton vision test to make sure it works
 void vision_test () {
  pros::lcd::initialize();
- bool isDoingStuff_UD = false;
+
  bool isDoingStuff_RO = false;
- pros::screen::set_pen(COLOR_BLUE_VIOLET);
- pros::screen::print(TEXT_MEDIUM, 1, "Heloehfoiew");
 
  while (true) {
 	 pros::lcd::clear();
@@ -62,37 +61,41 @@ void vision_test () {
 
 	 pros::screen::set_pen(COLOR_YELLOW);
 	 //move the arm up and down to keep the signature centered
+   //x, y so center is 150, 100. Max x = 300, max y = 200
 	 //check in y dimension
-	 if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
-		 arm_turntableA = 75;
-		 arm_turntableB = 75;
+	 if (nutral_mogii[0].y_middle_coord > 110){
+     pros::lcd::clear();
+     arm_turntableA.move_relative(-100, 127);
+		 arm_turntableB.move_relative(-100, 127);
 		 pros::screen::print(TEXT_SMALL, 1,"arm moving down");
-		 isDoingStuff_UD = true;
-	 } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
-		 arm_turntableA = -75;
-		 arm_turntableB = -75;
+     pros::delay(10);
+
+	 } else if (nutral_mogii[0].y_middle_coord < 90 && nutral_mogii[0].y_middle_coord != 0) {
+     pros::lcd::clear();
+     arm_turntableA.move_relative(100, 127);
+		 arm_turntableB.move_relative(100, 127);
 		 pros::screen::print(TEXT_SMALL, 1,"arm moving up");
-		 isDoingStuff_UD = true;
+     pros::delay(10);
+
 	 } else {
+     pros::lcd::clear();
 		 arm_turntableA = 0;
 		 arm_turntableB = 0;
 		 pros::screen::print(TEXT_SMALL, 1,"centered");
-		 isDoingStuff_UD = false;
+     pros::delay(10);
 	 }
 
 	 //check in x dimension - doesn't currently work
-	 if (nutral_mogii[0].x_middle_coord > 8 && !isDoingStuff_RO){ //NOTE: 10 may be too small a number. Check w/ testing
-		 crane_rotate = 50; //NOTE: check if this is moving in the right direction
+	 if (nutral_mogii[0].x_middle_coord > 160){
+		 crane_rotate.move_relative(100, 127); //NOTE: check if this is moving in the right direction
 		 pros::screen::print(TEXT_SMALL, 2,"arm going right");
-		 isDoingStuff_RO = true;
-	 } if (nutral_mogii[0].x_middle_coord < -8 && !isDoingStuff_RO) {
-		 crane_rotate = -50; //NOTE: check if this is moving in the right direction
+
+	 } if (nutral_mogii[0].x_middle_coord < 140 && nutral_mogii[0].x_middle_coord != 0) {
+		 crane_rotate.move_relative(-100, 127);
 		 pros::screen::print(TEXT_SMALL, 2,"arm going left");
-		 isDoingStuff_RO = true;
 	 } else {
 		 crane_rotate = 0;
 		 pros::screen::print(TEXT_SMALL, 2,"centered");
-		 isDoingStuff_RO = false;
 	 }
 
 	 pros::delay(15);
