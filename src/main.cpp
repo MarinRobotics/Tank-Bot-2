@@ -64,35 +64,36 @@ void vision_test () {
      arm_turntableA.move_relative(-40, 127);
 		 arm_turntableB.move_relative(-40, 127);
 		 pros::screen::print(TEXT_SMALL, 1,"arm moving down");
-     pros::delay(30);
+     pros::delay(25);
 
 	 } else if (red_target[0].y_middle_coord < 90 && red_target[0].y_middle_coord != 0) {
      pros::lcd::clear();
      arm_turntableA.move_relative(40, 127);
 		 arm_turntableB.move_relative(40, 127);
 		 pros::screen::print(TEXT_SMALL, 1,"arm moving up");
-     pros::delay(30);
+     pros::delay(25);
 
 	 } else {
      pros::lcd::clear();
-		 arm_turntableA = 0;
-		 arm_turntableB = 0;
+		 arm_turntableA.move_velocity(0);
+		 arm_turntableB.move_velocity(0);
 		 pros::screen::print(TEXT_SMALL, 1,"centered");
      pros::delay(5);
 	 }
 
 	 //check in x dimension
 	 if (red_target[0].x_middle_coord > 160){
-		 crane_rotate.move_relative(100, 127);
+		 crane_rotate.move_relative(90, 127);
 		 pros::screen::print(TEXT_SMALL, 2,"arm going right");
-     pros::delay(75);
+     pros::delay(60);
 
 	 } if (red_target[0].x_middle_coord < 140 && red_target[0].x_middle_coord != 0) {
-		 crane_rotate.move_relative(-100, 127);
+		 crane_rotate.move_relative(-90, 127);
 		 pros::screen::print(TEXT_SMALL, 2,"arm going left");
-     pros::delay(75);
+     pros::delay(60);
+
 	 } else {
-		 crane_rotate = 0;
+		 crane_rotate.move_velocity(0);
 		 pros::screen::print(TEXT_SMALL, 2,"centered");
      pros::delay(5);
 	 }
