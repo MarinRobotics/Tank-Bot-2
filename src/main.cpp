@@ -22,7 +22,7 @@ int sensport = 8;
 pros::Vision FrontSensor(sensport);
 
 //signatures
-pros::vision_signature_s_t neutral_mogii_sig =
+pros::vision_signature_s_t red_target_sig =
 FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 0);
 //neutral sig: 1, 2449, 2703, 2576, -3221, -3007, -3114, 3.000, 0
 //red sig: 1, 7301, 7873, 7588, -515, 177, -168, 3.000, 0
@@ -30,7 +30,7 @@ FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 
 
 
 //objects
-pros::vision_object_s_t nutral_mogii[3]; //3 is the max amount of detected neutral mogii
+pros::vision_object_s_t red_target[3]; //3 is the max amount of detected neutral mogii
 
 //this sets the trigger's firing mode
 void setTrigMode(int speedMult, int fireMode){
@@ -54,51 +54,53 @@ void vision_test () {
 
  while (true) {
 	 pros::lcd::clear();
-	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 3, nutral_mogii); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
+	 FrontSensor.read_by_sig(0, red_target_sig.id, 3, red_target); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
 	 pros::screen::set_pen(COLOR_BLUE_VIOLET);
-	 pros::screen::print(TEXT_SMALL, 4, "mogus object 0: (%d, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
+	 pros::screen::print(TEXT_SMALL, 4, "mogus object 0: (%d, %d)", red_target[0].x_middle_coord, red_target[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
 	 pros::screen::print(TEXT_SMALL, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
 
 	 pros::screen::set_pen(COLOR_YELLOW);
 	 //move the arm up and down to keep the signature centered
    //x, y so center is 150, 100. Max x = 300, max y = 200
 	 //check in y dimension
-	 if (nutral_mogii[0].y_middle_coord > 110){
+	 if (red_target[0].y_middle_coord > 110){
      pros::lcd::clear();
      arm_turntableA.move_relative(-100, 127);
 		 arm_turntableB.move_relative(-100, 127);
 		 pros::screen::print(TEXT_SMALL, 1,"arm moving down");
-     pros::delay(10);
+     pros::delay(5);
 
-	 } else if (nutral_mogii[0].y_middle_coord < 90 && nutral_mogii[0].y_middle_coord != 0) {
+	 } else if (red_target[0].y_middle_coord < 90 && red_target[0].y_middle_coord != 0) {
      pros::lcd::clear();
      arm_turntableA.move_relative(100, 127);
 		 arm_turntableB.move_relative(100, 127);
 		 pros::screen::print(TEXT_SMALL, 1,"arm moving up");
-     pros::delay(10);
+     pros::delay(5);
 
 	 } else {
      pros::lcd::clear();
 		 arm_turntableA = 0;
 		 arm_turntableB = 0;
 		 pros::screen::print(TEXT_SMALL, 1,"centered");
-     pros::delay(10);
+     pros::delay(5);
 	 }
 
-	 //check in x dimension - doesn't currently work
-	 if (nutral_mogii[0].x_middle_coord > 160){
-		 crane_rotate.move_relative(100, 127); //NOTE: check if this is moving in the right direction
+	 //check in x dimension
+	 if (red_target[0].x_middle_coord > 160){
+		 crane_rotate.move_relative(100, 127);
 		 pros::screen::print(TEXT_SMALL, 2,"arm going right");
+     pros::delay(5);
 
-	 } if (nutral_mogii[0].x_middle_coord < 140 && nutral_mogii[0].x_middle_coord != 0) {
+	 } if (red_target[0].x_middle_coord < 140 && red_target[0].x_middle_coord != 0) {
 		 crane_rotate.move_relative(-100, 127);
 		 pros::screen::print(TEXT_SMALL, 2,"arm going left");
+     pros::delay(5);
 	 } else {
 		 crane_rotate = 0;
 		 pros::screen::print(TEXT_SMALL, 2,"centered");
 	 }
 
-	 pros::delay(15);
+	 pros::delay(10);
 
    }
 }
