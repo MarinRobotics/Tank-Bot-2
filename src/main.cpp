@@ -24,10 +24,6 @@ pros::Vision FrontSensor(sensport);
 //signatures
 pros::vision_signature_s_t red_target_sig =
 FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 0);
-//neutral sig: 1, 2449, 2703, 2576, -3221, -3007, -3114, 3.000, 0
-//red sig: 1, 7301, 7873, 7588, -515, 177, -168, 3.000, 0
-//other red sig: 1, 8163, 9675, 8918, -595, 177, -208, 3.000, 0
-
 
 //objects
 pros::vision_object_s_t red_target[3]; //3 is the max amount of detected neutral mogii
@@ -65,17 +61,17 @@ void vision_test () {
 	 //check in y dimension
 	 if (red_target[0].y_middle_coord > 110){
      pros::lcd::clear();
-     arm_turntableA.move_relative(-100, 127);
-		 arm_turntableB.move_relative(-100, 127);
+     arm_turntableA.move_relative(-40, 127);
+		 arm_turntableB.move_relative(-40, 127);
 		 pros::screen::print(TEXT_SMALL, 1,"arm moving down");
-     pros::delay(5);
+     pros::delay(30);
 
 	 } else if (red_target[0].y_middle_coord < 90 && red_target[0].y_middle_coord != 0) {
      pros::lcd::clear();
-     arm_turntableA.move_relative(100, 127);
-		 arm_turntableB.move_relative(100, 127);
+     arm_turntableA.move_relative(40, 127);
+		 arm_turntableB.move_relative(40, 127);
 		 pros::screen::print(TEXT_SMALL, 1,"arm moving up");
-     pros::delay(5);
+     pros::delay(30);
 
 	 } else {
      pros::lcd::clear();
@@ -89,15 +85,16 @@ void vision_test () {
 	 if (red_target[0].x_middle_coord > 160){
 		 crane_rotate.move_relative(100, 127);
 		 pros::screen::print(TEXT_SMALL, 2,"arm going right");
-     pros::delay(5);
+     pros::delay(75);
 
 	 } if (red_target[0].x_middle_coord < 140 && red_target[0].x_middle_coord != 0) {
 		 crane_rotate.move_relative(-100, 127);
 		 pros::screen::print(TEXT_SMALL, 2,"arm going left");
-     pros::delay(5);
+     pros::delay(75);
 	 } else {
 		 crane_rotate = 0;
 		 pros::screen::print(TEXT_SMALL, 2,"centered");
+     pros::delay(5);
 	 }
 
 	 pros::delay(10);
