@@ -20,6 +20,10 @@ pros::Motor crane_rotate (20);
 //define vision sensor and signatures
 int sensport = 8;
 pros::Vision FrontSensor(sensport);
+int sensitivityY = 0;
+int sensitivityX = 0;
+int maxDistX = 90;
+int maxDistY = 40;
 
 //signatures
 pros::vision_signature_s_t red_target_sig =
@@ -42,62 +46,203 @@ void setTrigMode(int speedMult, int fireMode){
     }
 }
 
+
+//note: sensitivity works like this:
+//closer to 0, the less movement.
+//0 is none
+//negative values are moving down
+//positive, up
+
+void setSensThresholds(){
+  //check in y dimension
+  //sensitivityY 3 - least movement
+  if (red_target[0].y_middle_coord > 110 && red_target[0].y_middle_coord <= 140){
+    sensitivityY = 3;
+  }
+  //sensitivityY 2 - middle amount
+  else if (red_target[0].y_middle_coord > 140 && red_target[0].y_middle_coord <= 180){
+    sensitivityY = 2;
+  }
+  //sensitivityY 1 - most amount
+  else if (red_target[0].y_middle_coord > 180 && red_target[0].y_middle_coord <= 200){
+    sensitivityY = 1;
+  }
+
+  //check for negative values
+  //sensitivity 3 - most movement
+  else if (red_target[0].y_middle_coord < 90 && red_target[0].y_middle_coord != 0){
+    sensitivityY = -3;
+  }
+  //sens 2
+  else if (red_target[0].y_middle_coord < 60 && red_target[0].y_middle_coord != 0){
+    sensitivityY = -2;
+  }
+  //sens 3
+  else if (red_target[0].y_middle_coord < 20 && red_target[0].y_middle_coord != 0){
+    sensitivityY = -1;
+  }
+
+  //reset sensitivity
+  else {
+    sensitivityY = 0;
+  }
+
+
+  //check in x
+  //sensitivityY 3 - least movement
+  if (red_target[0].x_middle_coord > 160 && red_target[0].x_middle_coord <= 180){
+    sensitivityX = 3;
+  }
+  //sensitivityY 2 - middle amount
+  else if (red_target[0].x_middle_coord > 180 && red_target[0].x_middle_coord <= 220){
+    sensitivityX = 2;
+  }
+  //sensitivityY 1 - most amount
+  else if (red_target[0].x_middle_coord > 220 && red_target[0].x_middle_coord <= 300){
+    sensitivityX = 1;
+  }
+
+  //check for negative values//
+  //sensitivity 3 - most movement
+  else if (red_target[0].x_middle_coord < 140 && red_target[0].x_middle_coord >= 120){
+    sensitivityX = -3;
+  }
+  //sens 2
+  else if (red_target[0].x_middle_coord < 120 && red_target[0].x_middle_coord >= 80){
+    sensitivityX = -2;
+  }
+  //sens 3
+  else if (red_target[0].x_middle_coord < 80 && red_target[0].x_middle_coord != 0){
+    sensitivityX = -1;
+  }
+
+  //reset sensitivity
+  else {
+    sensitivityX = 0;
+  }
+}
+
+
+//x, y so center is 150, 100. Max x = 300, max y = 200
+void moveTurretUp_Down(){
+  //move motors - positive
+  if (sensitivityY == 1){
+    pros::lcd::clear();
+    arm_turntableA.move_relative(-int(maxDistY * 0.5), 127);
+    arm_turntableB.move_relative(-int(maxDistY * 0.5), 127);
+    pros::screen::print(TEXT_SMALL, 1,"arm moving down %d", sensitivityY);
+    pros::delay(25);
+
+  } else if (sensitivityY == 2) {
+    pros::lcd::clear();
+    arm_turntableA.move_relative(-int(maxDistY * 0.75), 127);
+    arm_turntableB.move_relative(-int(maxDistY * 0.75), 127);
+    pros::screen::print(TEXT_SMALL, 1,"arm moving up %d", sensitivityY);
+    pros::delay(25);
+
+  } else if (sensitivityY == 3) {
+    pros::lcd::clear();
+    arm_turntableA.move_relative(-maxDistY, 127);
+    arm_turntableB.move_relative(-maxDistY, 127);
+    pros::screen::print(TEXT_SMALL, 1,"arm moving up %d", sensitivityY);
+    pros::delay(25);
+
+  }
+
+  //move motors - negative
+  else if (sensitivityY == -1) {
+    pros::lcd::clear();
+    arm_turntableA.move_relative(int(maxDistY * 0.5), 127);
+    arm_turntableB.move_relative(int(maxDistY * 0.5), 127);
+    pros::screen::print(TEXT_SMALL, 1,"arm moving up %d", sensitivityY);
+    pros::delay(25);
+
+  } else if (sensitivityY == -2) {
+    pros::lcd::clear();
+    arm_turntableA.move_relative(int(maxDistY * 0.75), 127);
+    arm_turntableB.move_relative(int(maxDistY * 0.75), 127);
+    pros::screen::print(TEXT_SMALL, 1,"arm moving up %d", sensitivityY);
+    pros::delay(25);
+
+  } else if (sensitivityY == -3) {
+    pros::lcd::clear();
+    arm_turntableA.move_relative(maxDistY, 127);
+    arm_turntableB.move_relative(maxDistY, 127);
+    pros::screen::print(TEXT_SMALL, 1,"arm moving up %d", sensitivityY);
+    pros::delay(25);
+
+  } else {
+    pros::lcd::clear();
+    arm_turntableA.move_velocity(0);
+    arm_turntableB.move_velocity(0);
+    pros::screen::print(TEXT_SMALL, 1,"centered");
+    pros::delay(5);
+  }
+}
+
+//////////////////////
+
+void moveTurretSide_Side(){
+  //check in x dimension - positive
+  if (sensitivityX == 1){
+    crane_rotate.move_relative(int(maxDistX * 0.5), 127);
+    pros::screen::print(TEXT_SMALL, 2,"arm going right");
+    pros::delay(60);
+
+  } else if (sensitivityX == 2) {
+    crane_rotate.move_relative(int(maxDistX * 0.75), 127);
+
+    pros::delay(60);
+
+  } else if (sensitivityX == 3) {
+    crane_rotate.move_relative(maxDistX, 127);
+
+    pros::delay(60);
+
+  }
+  //check in x - negative
+  else if (sensitivityX == -1) {
+    crane_rotate.move_relative(-int(maxDistX * 0.5), 127);
+    pros::delay(60);
+
+  } else if (sensitivityX == -2) {
+    crane_rotate.move_relative(-int(maxDistX * 0.75), 127);
+    pros::delay(60);
+
+  } else if (sensitivityX == -3) {
+    crane_rotate.move_relative(-maxDistX, 127);
+
+    pros::delay(60);
+
+  }else {
+    crane_rotate.move_velocity(0);
+    pros::screen::print(TEXT_SMALL, 2,"centered");
+    pros::delay(5);
+  }
+}
+
+/////////////////////
+
+void setParams(){
+  pros::lcd::clear();
+  FrontSensor.read_by_sig(0, red_target_sig.id, 3, red_target); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
+  pros::screen::set_pen(COLOR_BLUE_VIOLET);
+  pros::screen::print(TEXT_SMALL, 4, "mogus object 0: (%d, %d)", red_target[0].x_middle_coord, red_target[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
+  pros::screen::print(TEXT_SMALL, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
+  pros::screen::set_pen(COLOR_YELLOW);
+}
+
+/////////////////////
+
 //auton vision test to make sure it works
 void vision_test () {
  pros::lcd::initialize();
 
- bool isDoingStuff_RO = false;
-
  while (true) {
-	 pros::lcd::clear();
-	 FrontSensor.read_by_sig(0, red_target_sig.id, 3, red_target); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
-	 pros::screen::set_pen(COLOR_BLUE_VIOLET);
-	 pros::screen::print(TEXT_SMALL, 4, "mogus object 0: (%d, %d)", red_target[0].x_middle_coord, red_target[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
-	 pros::screen::print(TEXT_SMALL, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
-
-	 pros::screen::set_pen(COLOR_YELLOW);
-	 //move the arm up and down to keep the signature centered
-   //x, y so center is 150, 100. Max x = 300, max y = 200
-	 //check in y dimension
-	 if (red_target[0].y_middle_coord > 110){
-     pros::lcd::clear();
-     arm_turntableA.move_relative(-40, 127);
-		 arm_turntableB.move_relative(-40, 127);
-		 pros::screen::print(TEXT_SMALL, 1,"arm moving down");
-     pros::delay(25);
-
-	 } else if (red_target[0].y_middle_coord < 90 && red_target[0].y_middle_coord != 0) {
-     pros::lcd::clear();
-     arm_turntableA.move_relative(40, 127);
-		 arm_turntableB.move_relative(40, 127);
-		 pros::screen::print(TEXT_SMALL, 1,"arm moving up");
-     pros::delay(25);
-
-	 } else {
-     pros::lcd::clear();
-		 arm_turntableA.move_velocity(0);
-		 arm_turntableB.move_velocity(0);
-		 pros::screen::print(TEXT_SMALL, 1,"centered");
-     pros::delay(5);
-	 }
-
-	 //check in x dimension
-	 if (red_target[0].x_middle_coord > 160){
-		 crane_rotate.move_relative(90, 127);
-		 pros::screen::print(TEXT_SMALL, 2,"arm going right");
-     pros::delay(60);
-
-	 } if (red_target[0].x_middle_coord < 140 && red_target[0].x_middle_coord != 0) {
-		 crane_rotate.move_relative(-90, 127);
-		 pros::screen::print(TEXT_SMALL, 2,"arm going left");
-     pros::delay(60);
-
-	 } else {
-		 crane_rotate.move_velocity(0);
-		 pros::screen::print(TEXT_SMALL, 2,"centered");
-     pros::delay(5);
-	 }
-
+	 setParams();
+	 setSensThresholds();
+   moveTurretUp_Down();
+   moveTurretSide_Side();
 	 pros::delay(10);
 
    }
