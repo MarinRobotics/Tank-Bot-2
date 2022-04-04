@@ -30,7 +30,7 @@ pros::vision_signature_s_t red_target_sig =
 FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 0);
 
 //objects
-pros::vision_object_s_t red_target[3]; //3 is the max amount of detected neutral mogii
+pros::vision_object_s_t red_target[3]; //3 is the max amount of detected objects
 
 //this sets the trigger's firing mode
 void setTrigMode(int speedMult, int fireMode){
@@ -175,7 +175,6 @@ void moveTurretUp_Down(){
     pros::lcd::clear();
     arm_turntableA.move_velocity(0);
     arm_turntableB.move_velocity(0);
-    pros::screen::print(TEXT_SMALL, 1,"centered");
     pros::delay(5);
   }
 }
@@ -185,28 +184,25 @@ void moveTurretUp_Down(){
 void moveTurretSide_Side(){
   //check in x dimension - positive
   if (sensitivityX == 1){
-    crane_rotate.move_relative(int(maxDistX * 0.5), 127);
-    pros::screen::print(TEXT_SMALL, 2,"arm going right");
+    crane_rotate.move_relative(int(maxDistX * 0.2), 127);
     pros::delay(60);
 
   } else if (sensitivityX == 2) {
-    crane_rotate.move_relative(int(maxDistX * 0.75), 127);
-
+    crane_rotate.move_relative(int(maxDistX * 0.5), 127);
     pros::delay(60);
 
   } else if (sensitivityX == 3) {
     crane_rotate.move_relative(maxDistX, 127);
-
     pros::delay(60);
 
   }
   //check in x - negative
   else if (sensitivityX == -1) {
-    crane_rotate.move_relative(-int(maxDistX * 0.5), 127);
+    crane_rotate.move_relative(-int(maxDistX * 0.2), 127);
     pros::delay(60);
 
   } else if (sensitivityX == -2) {
-    crane_rotate.move_relative(-int(maxDistX * 0.75), 127);
+    crane_rotate.move_relative(-int(maxDistX * 0.5), 127);
     pros::delay(60);
 
   } else if (sensitivityX == -3) {
@@ -216,7 +212,6 @@ void moveTurretSide_Side(){
 
   }else {
     crane_rotate.move_velocity(0);
-    pros::screen::print(TEXT_SMALL, 2,"centered");
     pros::delay(5);
   }
 }
@@ -234,6 +229,7 @@ void setParams(){
 
 /////////////////////
 
+
 //auton vision test to make sure it works
 void vision_test () {
  pros::lcd::initialize();
@@ -244,7 +240,6 @@ void vision_test () {
    moveTurretUp_Down();
    moveTurretSide_Side();
 	 pros::delay(10);
-
    }
 }
 
