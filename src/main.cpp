@@ -53,6 +53,12 @@ void setTrigMode(int speedMult, int fireMode){
 //negative values are moving down
 //positive, up
 
+//200 in x, 300 in y
+//ratio is 200/127 mtr speed X, 300/127 mtr speed Y. This is asymptotic, though, so aproachs
+//center of target - center coords of the obj (called error)
+//then error * k (a constant)
+//multiplying the error makes you approach target quicker
+
 void setSensThresholds(){
   //check in y dimension
   //sensitivityY 3 - least movement
@@ -69,7 +75,7 @@ void setSensThresholds(){
   }
 
   //check for negative values
-  //sensitivity 3 - most movement
+  //sensitivity 3 - least movement
   else if (red_target[0].y_middle_coord < 90 && red_target[0].y_middle_coord != 0){
     sensitivityY = -3;
   }
@@ -103,7 +109,7 @@ void setSensThresholds(){
   }
 
   //check for negative values//
-  //sensitivity 3 - most movement
+  //sensitivity 3 - least movement
   else if (red_target[0].x_middle_coord < 140 && red_target[0].x_middle_coord >= 120){
     sensitivityX = -3;
   }
@@ -126,7 +132,7 @@ void setSensThresholds(){
 //x, y so center is 150, 100. Max x = 300, max y = 200
 void moveTurretUp_Down(){
   //move motors - positive
-  if (sensitivityY == 1){
+  if (sensitivityY == 3){
     pros::lcd::clear();
     arm_turntableA.move_relative(-int(maxDistY * 0.5), 127);
     arm_turntableB.move_relative(-int(maxDistY * 0.5), 127);
@@ -140,7 +146,7 @@ void moveTurretUp_Down(){
     pros::screen::print(TEXT_SMALL, 1,"arm moving up %d", sensitivityY);
     pros::delay(25);
 
-  } else if (sensitivityY == 3) {
+  } else if (sensitivityY == 1) {
     pros::lcd::clear();
     arm_turntableA.move_relative(-maxDistY, 127);
     arm_turntableB.move_relative(-maxDistY, 127);
@@ -150,7 +156,7 @@ void moveTurretUp_Down(){
   }
 
   //move motors - negative
-  else if (sensitivityY == -1) {
+  else if (sensitivityY == -3) {
     pros::lcd::clear();
     arm_turntableA.move_relative(int(maxDistY * 0.5), 127);
     arm_turntableB.move_relative(int(maxDistY * 0.5), 127);
@@ -164,7 +170,7 @@ void moveTurretUp_Down(){
     pros::screen::print(TEXT_SMALL, 1,"arm moving up %d", sensitivityY);
     pros::delay(25);
 
-  } else if (sensitivityY == -3) {
+  } else if (sensitivityY == -1) {
     pros::lcd::clear();
     arm_turntableA.move_relative(maxDistY, 127);
     arm_turntableB.move_relative(maxDistY, 127);
@@ -185,33 +191,39 @@ void moveTurretSide_Side(){
   //check in x dimension - positive
   if (sensitivityX == 1){
     crane_rotate.move_relative(int(maxDistX * 0.2), 127);
+    pros::screen::print(TEXT_SMALL, 2,"arm moving side %d", sensitivityX);
     pros::delay(60);
 
   } else if (sensitivityX == 2) {
     crane_rotate.move_relative(int(maxDistX * 0.5), 127);
+    pros::screen::print(TEXT_SMALL, 2,"arm moving side %d", sensitivityX);
     pros::delay(60);
 
   } else if (sensitivityX == 3) {
     crane_rotate.move_relative(maxDistX, 127);
+    pros::screen::print(TEXT_SMALL, 2,"arm moving side %d", sensitivityX);
     pros::delay(60);
 
   }
   //check in x - negative
   else if (sensitivityX == -1) {
     crane_rotate.move_relative(-int(maxDistX * 0.2), 127);
+    pros::screen::print(TEXT_SMALL, 2,"arm moving side %d", sensitivityX);
     pros::delay(60);
 
   } else if (sensitivityX == -2) {
     crane_rotate.move_relative(-int(maxDistX * 0.5), 127);
+    pros::screen::print(TEXT_SMALL, 2,"arm moving side %d", sensitivityX);
     pros::delay(60);
 
   } else if (sensitivityX == -3) {
     crane_rotate.move_relative(-maxDistX, 127);
-
+    pros::screen::print(TEXT_SMALL, 2,"arm moving side %d", sensitivityX);
     pros::delay(60);
 
-  }else {
+  } else {
     crane_rotate.move_velocity(0);
+    pros::screen::print(TEXT_SMALL, 2,"arm neutral side %d", sensitivityX);
     pros::delay(5);
   }
 }
