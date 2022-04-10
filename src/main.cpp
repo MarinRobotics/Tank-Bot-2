@@ -15,17 +15,28 @@ pros::Motor arm_turntableB(9, true);
 pros::Motor trigger (19);
 pros::Motor crane_rotate (20);
 
+//define drive motor speed variables by side
+int right_speed = 0;
+int left_speed = 0;
+
+//define controller variables
+int right_x;
+int right_y;
+int left_x;
+int left_y;
 
 //vision sensor stuff
 //define vision sensor and signatures
 int sensport = 8;
 pros::Vision FrontSensor(sensport);
 
-//sensitivity
+//sensitivity variables
 int centerX = 158;
 int centerY = 106;
 int mtrSpeedX = 0;
 int mtrSpeedY = 0;
+
+//error calculations
 int errorAmountX = 0;
 int errorAmountY = 0;
 int k = 1;
@@ -37,8 +48,9 @@ FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 
 //objects
 pros::vision_object_s_t red_target[3]; //3 is the max amount of detected objects
 
-
+// _______ \\
 //FUNCTIONS\\
+//‾‾‾‾‾‾‾‾‾\\
 
 //this sets the trigger's firing mode (full auto)
 void setTrigMode(int speedMult, int fireMode){
@@ -58,7 +70,7 @@ void setTrigMode(int speedMult, int fireMode){
 
 //max dimensions of vision sensor view: 315 in x, 211 in y
 //ratio is 315/2 for mid x, 211/2 for mid Y.
-//center of target - center coords of the obj (amount of error, or dist from center)
+//center of target (mid x, mid y) - center coords of the obj = amount of error, or dist from center
 //then error * k (a constant)
 //multiplying the error makes you approach target quicker,
 //and negates the asymptotic effect of linearly proportional motor speeds
@@ -80,13 +92,17 @@ void CalculateErrorAmounts(){
 /////////////////////
 
 void MoveMotors(){
-  //use the computed values for error to move motors at speed
+  //use the computed values for mtr speed to move motors
   //on the x (side-side) crane_rotate
   crane_rotate = mtrSpeedX;
 
   //on the y (up-down) arm_turntableA && B
   arm_turntableA = mtrSpeedY;
   arm_turntableB = mtrSpeedY;
+
+  //if mtr speed is less than 5 and/or greater than -5, set it to 0.
+  mtrSpeedX = (mtrSpeedX <= 5 && mtrSpeedX > 0) || (mtrSpeedX >= -5 && mtrSpeedX < 0) ? mtrSpeedX = 0 : mtrSpeedX;
+  mtrSpeedY = (mtrSpeedY <= 5 && mtrSpeedY > 0) || (mtrSpeedY >= -5 && mtrSpeedY < 0) ? mtrSpeedY = 0 : mtrSpeedY;
 }
 
 /////////////////////
@@ -102,7 +118,6 @@ void setParams(){
 
 /////////////////////
 
-
 //auton vision test to make sure it works
 void vision_test () {
  pros::lcd::initialize();
@@ -115,6 +130,7 @@ void vision_test () {
    }
 }
 
+/////////////////////
 
 //awp selection
 bool pressed = false;
@@ -126,30 +142,9 @@ void on_center_button() {
 	} else {
 		pros::lcd::print(4, "Manual Targeting");
 	}
-
-	//helper struct
-	struct control {
-		struct {
-			int x = 0;
-			int y = 0;
-		} left;
-		struct {
-			int x = 0;
-			int y = 0;
-		} right;
-	} position;
-
-	//define drive motor speed variables by side
-	int right_speed = 0;
-	int left_speed = 0;
-
-	//define controller variables
-	int right_x;
-	int right_y;
-	int left_x;
-	int left_y;
 }
 
+/////////////////////
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
