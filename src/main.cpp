@@ -39,7 +39,8 @@ int mtrSpeedY = 0;
 //error calculations
 int errorAmountX = 0;
 int errorAmountY = 0;
-int k = 1;
+float gainX = 0.5;
+float gainY = 0.6;
 
 //signatures
 pros::vision_signature_s_t red_target_sig =
@@ -77,8 +78,8 @@ void setTrigMode(int speedMult, int fireMode){
 
 void CalculateErrorAmounts(){
   //find the difference between current center pos and desired center pos (in x and then y)
-  errorAmountX = k*(red_target[0].x_middle_coord - centerX);
-  errorAmountY = k*(red_target[0].y_middle_coord - centerY);
+  errorAmountX = int(gainX*(red_target[0].x_middle_coord - centerX));
+  errorAmountY = int(gainY*(red_target[0].y_middle_coord - centerY));
 
   //clamp errorAmounts in range the mtrs can take
   std::clamp(errorAmountX, 127, -127);
