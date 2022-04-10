@@ -37,7 +37,10 @@ FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 
 //objects
 pros::vision_object_s_t red_target[3]; //3 is the max amount of detected objects
 
-//this sets the trigger's firing mode
+
+//FUNCTIONS\\
+
+//this sets the trigger's firing mode (full auto)
 void setTrigMode(int speedMult, int fireMode){
   pros::lcd::initialize();
     if (fireMode == 1){
@@ -51,21 +54,39 @@ void setTrigMode(int speedMult, int fireMode){
     }
 }
 
+/////////////////////
 
-//315 in x, 211 in y
-//ratio is 300/127 mtr speed X, 200/127 mtr speed Y. This is asymptotic, though, so aproachs no error but never hits it.
-//center of target - center coords of the obj (called error)
+//max dimensions of vision sensor view: 315 in x, 211 in y
+//ratio is 315/2 for mid x, 211/2 for mid Y.
+//center of target - center coords of the obj (amount of error, or dist from center)
 //then error * k (a constant)
-//multiplying the error makes you approach target quicker
+//multiplying the error makes you approach target quicker,
+//and negates the asymptotic effect of linearly proportional motor speeds
 
 void CalculateErrorAmounts(){
   //find the difference between current center pos and desired center pos (in x and then y)
   errorAmountX = k*(red_target[0].x_middle_coord - centerX);
   errorAmountY = k*(red_target[0].y_middle_coord - centerY);
 
+  //clamp errorAmounts in range the mtrs can take
+  std::clamp(errorAmountX, 127, -127);
+  std::clamp(errorAmountY, 127, -127);
+
   //correct the motor move increments to fit amount of error
   mtrSpeedX = errorAmountX;
   mtrSpeedY = errorAmountY;
+}
+
+/////////////////////
+
+void MoveMotors(){
+  //use the computed values for error to move motors at speed
+  //on the x (side-side) crane_rotate
+  crane_rotate = mtrSpeedX;
+
+  //on the y (up-down) arm_turntableA && B
+  arm_turntableA = mtrSpeedY;
+  arm_turntableB = mtrSpeedY;
 }
 
 /////////////////////
@@ -89,7 +110,7 @@ void vision_test () {
  while (true) {
 	 setParams();
 	 CalculateErrorAmounts();
-   //MoveMotors();
+   MoveMotors();
 	 pros::delay(10);
    }
 }
