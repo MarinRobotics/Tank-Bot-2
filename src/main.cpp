@@ -61,7 +61,6 @@ pros::vision_object_s_t red_target[3]; //3 is the max amount of detected objects
 // _______ \\
 //FUNCTIONS\\
 //‾‾‾‾‾‾‾‾‾\\
-
 //this sets the trigger's firing mode (full auto)
 void setTrigMode(int speedMult, int fireMode){
   pros::lcd::initialize();
