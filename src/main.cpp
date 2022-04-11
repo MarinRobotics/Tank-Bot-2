@@ -42,6 +42,15 @@ int errorAmountY = 0;
 float gainX = 0.5;
 float gainY = 0.6;
 
+//limiters
+int motorPosX = 0;
+int motorPosY = 0;
+bool isOverThreshY1 = false; //over positive thresh
+bool isOverThreshY2 = false; //over negative thresh
+
+bool isOverThreshX1 = false;
+bool isOverThreshX2 = false;
+
 //signatures
 pros::vision_signature_s_t red_target_sig =
 FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 0);
@@ -93,13 +102,26 @@ void CalculateErrorAmounts(){
 /////////////////////
 
 void MoveMotors(){
-  //use the computed values for mtr speed to move motors
-  //on the x (side-side) crane_rotate
-  crane_rotate = mtrSpeedX;
+  //limits
+  int motorThreshX = 4300;
+  int motorThreshY = 1000;
+  motorPosX = crane_rotate.get_position();
+  motorPosY = arm_turntableA.get_position();
 
-  //on the y (up-down) arm_turntableA && B
-  arm_turntableA = mtrSpeedY;
-  arm_turntableB = mtrSpeedY;
+  //use the computed values for mtr speed to move motors
+  //on the x (side-side) crane_rotate w/ limits
+  crane_rotate = (motorPosX >= motorThreshX) ? isOverThreshX1 = true : mtrSpeedX, isOverThreshX1 = false;
+  crane_rotate = (motorPosX <= -motorThreshX) ? isOverThreshX2 = true : mtrSpeedX, isOverThreshX2 = false;
+
+  isOverThreshX1 ? std::clamp(mtrSpeedX, 0, -127) : std::clamp(mtrSpeedX, 127, -127); //is the mtr pos X over the positive threshold? if so, make the speed only be negative.
+  isOverThreshX2 ? std::clamp(mtrSpeedX, 127, 0) : std::clamp(mtrSpeedX, 127, -127); //is the mtr pos X over the negative threshold? if so, make the speed only be negative.
+
+  //on the y (up-down) arm_turntableA && B w/ limits
+  arm_turntableA = (motorPosY >= motorThreshY) ? isOverThreshY1 = true : mtrSpeedY, isOverThreshY1 = false;
+  arm_turntableB = (motorPosY <= -motorThreshY) ? isOverThreshY2 = true : mtrSpeedY, isOverThreshY2 = false;
+
+  isOverThreshY1 ? std::clamp(mtrSpeedY, 0, -127) : isOverThreshY1 = false, std::clamp(mtrSpeedY, 127, -127); //is the motor pos Y over the positive threshold? if so, make the speed only be negative.
+  isOverThreshY2 ? std::clamp(mtrSpeedY, 127, 0) : isOverThreshY2 = false, std::clamp(mtrSpeedY, 127, -127); //is the motor pos Y over the negative threshold? if so, make the speed only be postive.
 
   //if mtr speed is less than 5 and/or greater than -5, set it to 0.
   mtrSpeedX = (mtrSpeedX <= 5 && mtrSpeedX > 0) || (mtrSpeedX >= -5 && mtrSpeedX < 0) ? mtrSpeedX = 0 : mtrSpeedX;
@@ -114,6 +136,7 @@ void setParams(){
   pros::screen::set_pen(COLOR_BLUE_VIOLET); //these help distinguish between debug sections
   pros::screen::print(TEXT_SMALL, 4, "mogus object 0: (%d, %d)", red_target[0].x_middle_coord, red_target[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
   pros::screen::print(TEXT_SMALL, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
+  pros::screen::print(TEXT_SMALL, 6, "abs mtr pos X: %d", motorPosX); //prints the amount of objects detected by vision sensor
   pros::screen::set_pen(COLOR_YELLOW);
 }
 
