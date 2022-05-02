@@ -11,76 +11,149 @@ pros::Motor right_back_mtr(10,true);
 pros::Motor arm_turntableA(2);
 pros::Motor arm_turntableB(9, true);
 
-//motor definitions - arm and jaw
-pros::Motor jaw (19);
+//motor definitions - trigger and jaw
+pros::Motor trigger (19);
 pros::Motor crane_rotate (20);
 
+//define drive motor speed variables by side
+int right_speed = 0;
+int left_speed = 0;
+
+//define controller variables
+int right_x;
+int right_y;
+int left_x;
+int left_y;
 
 //vision sensor stuff
 //define vision sensor and signatures
 int sensport = 8;
 pros::Vision FrontSensor(sensport);
 
+//sensitivity variables
+int centerX = 158;
+int centerY = 106;
+int mtrSpeedX = 0;
+int mtrSpeedY = 0;
+
+//error calculations
+int errorAmountX = 0;
+int errorAmountY = 0;
+float gainX = 0.5;
+float gainY = 0.6;
+
+//limiters
+int motorPosX = 0;
+int motorPosY = 0;
+bool isOverThreshY1 = false; //over positive thresh
+bool isOverThreshY2 = false; //over negative thresh
+
+bool isOverThreshX1 = false;
+bool isOverThreshX2 = false;
+
 //signatures
-pros::vision_signature_s_t neutral_mogii_sig =
-FrontSensor.signature_from_utility(1, 2449, 2703, 2576, -3221, -3007, -3114, 3.000, 0);
+pros::vision_signature_s_t red_target_sig =
+FrontSensor.signature_from_utility(1, 8163, 9675, 8918, -595, 177, -208, 3.000, 0);
 
 //objects
-pros::vision_object_s_t nutral_mogii[3]; //3 is the max amount of detected neutral mogii
+pros::vision_object_s_t red_target[3]; //3 is the max amount of detected objects
+
+// _______ \\
+//FUNCTIONS\\
+//‾‾‾‾‾‾‾‾‾\\
+//this sets the trigger's firing mode (full auto)
+void setTrigMode(int speedMult, int fireMode){
+  pros::lcd::initialize();
+    if (fireMode == 1){
+      trigger = 127;
+      pros::lcd::print(1, "firing");
+    }
+
+    else {
+      trigger.move_velocity(0);
+      pros::lcd::print(1, "standby");
+    }
+}
+
+/////////////////////
+
+//max dimensions of vision sensor view: 315 in x, 211 in y
+//ratio is 315/2 for mid x, 211/2 for mid Y.
+//center of target (mid x, mid y) - center coords of the obj = amount of error, or dist from center
+//then error * k (a constant)
+//multiplying the error makes you approach target quicker,
+//and negates the asymptotic effect of linearly proportional motor speeds
+
+void CalculateErrorAmounts(){
+  //find the difference between current center pos and desired center pos (in x and then y)
+  errorAmountX = int(gainX*(red_target[0].x_middle_coord - centerX));
+  errorAmountY = int(gainY*(red_target[0].y_middle_coord - centerY));
+
+  //clamp errorAmounts in range the mtrs can take
+  std::clamp(errorAmountX, 127, -127);
+  std::clamp(errorAmountY, 127, -127);
+
+  //correct the motor move increments to fit amount of error
+  mtrSpeedX = errorAmountX;
+  mtrSpeedY = errorAmountY;
+}
+
+/////////////////////
+
+void MoveMotors(){
+  //limits
+  int motorThreshX = 4300;
+  int motorThreshY = 1000;
+  motorPosX = crane_rotate.get_position();
+  motorPosY = arm_turntableA.get_position();
+
+  //use the computed values for mtr speed to move motors
+  //on the x (side-side) crane_rotate w/ limits
+  crane_rotate = (motorPosX >= motorThreshX) ? isOverThreshX1 = true : mtrSpeedX, isOverThreshX1 = false;
+  crane_rotate = (motorPosX <= -motorThreshX) ? isOverThreshX2 = true : mtrSpeedX, isOverThreshX2 = false;
+
+  isOverThreshX1 ? std::clamp(mtrSpeedX, 0, -127) : std::clamp(mtrSpeedX, 127, -127); //is the mtr pos X over the positive threshold? if so, make the speed only be negative.
+  isOverThreshX2 ? std::clamp(mtrSpeedX, 127, 0) : std::clamp(mtrSpeedX, 127, -127); //is the mtr pos X over the negative threshold? if so, make the speed only be negative.
+
+  //on the y (up-down) arm_turntableA && B w/ limits
+  arm_turntableA = (motorPosY >= motorThreshY) ? isOverThreshY1 = true : mtrSpeedY, isOverThreshY1 = false;
+  arm_turntableB = (motorPosY <= -motorThreshY) ? isOverThreshY2 = true : mtrSpeedY, isOverThreshY2 = false;
+
+  isOverThreshY1 ? std::clamp(mtrSpeedY, 0, -127) : isOverThreshY1 = false, std::clamp(mtrSpeedY, 127, -127); //is the motor pos Y over the positive threshold? if so, make the speed only be negative.
+  isOverThreshY2 ? std::clamp(mtrSpeedY, 127, 0) : isOverThreshY2 = false, std::clamp(mtrSpeedY, 127, -127); //is the motor pos Y over the negative threshold? if so, make the speed only be postive.
+
+  //if mtr speed is less than 5 and/or greater than -5, set it to 0.
+  mtrSpeedX = (mtrSpeedX <= 5 && mtrSpeedX > 0) || (mtrSpeedX >= -5 && mtrSpeedX < 0) ? mtrSpeedX = 0 : mtrSpeedX;
+  mtrSpeedY = (mtrSpeedY <= 5 && mtrSpeedY > 0) || (mtrSpeedY >= -5 && mtrSpeedY < 0) ? mtrSpeedY = 0 : mtrSpeedY;
+}
+
+/////////////////////
+
+void setParams(){
+  pros::lcd::clear();
+  FrontSensor.read_by_sig(0, red_target_sig.id, 3, red_target); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
+  pros::screen::set_pen(COLOR_BLUE_VIOLET); //these help distinguish between debug sections
+  pros::screen::print(TEXT_SMALL, 4, "mogus object 0: (%d, %d)", red_target[0].x_middle_coord, red_target[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
+  pros::screen::print(TEXT_SMALL, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
+  pros::screen::print(TEXT_SMALL, 6, "abs mtr pos X: %d", motorPosX); //prints the amount of objects detected by vision sensor
+  pros::screen::set_pen(COLOR_YELLOW);
+}
+
+/////////////////////
 
 //auton vision test to make sure it works
 void vision_test () {
  pros::lcd::initialize();
- bool isDoingStuff_UD = false;
- bool isDoingStuff_RO = false;
 
  while (true) {
-	 pros::lcd::clear();
-	 FrontSensor.read_by_sig(0, neutral_mogii_sig.id, 3, nutral_mogii); //The vision sensor takes a picture, finds the areas with the matching color signature provided, (3 is the max amount of objects) then stores them into an area of those objects
-	 pros::screen::set_pen(COLOR_BLUE_VIOLET);
-	 pros::screen::print(TEXT_MEDIUM, 4, "mogus object 0: (%d, %d)", nutral_mogii[0].x_middle_coord, nutral_mogii[0].y_middle_coord); //prints the details of the first mogii object in array on the screen
-	 pros::screen::print(TEXT_MEDIUM, 5, "object count: %d", FrontSensor.get_object_count()); //prints the amount of objects detected by vision sensor
-
-	 pros::screen::set_pen(COLOR_YELLOW);
-	 //move the arm up and down to keep the signature centered
-	 //check in y dimension
-	 if (nutral_mogii[0].y_middle_coord > 10 && !isDoingStuff_UD){ //NOTE: 10 may be too small a number. Check w/ testing
-		 arm_turntableA = 100;
-		 arm_turntableB = 100;
-		 pros::screen::print(TEXT_LARGE, 1,"arm moving down");
-		 isDoingStuff_UD = true;
-	 } if (nutral_mogii[0].y_middle_coord < -10 && !isDoingStuff_UD) {
-		 arm_turntableA = -100;
-		 arm_turntableB = -100;
-		 pros::screen::print(TEXT_LARGE, 1,"arm moving up");
-		 isDoingStuff_UD = true;
-	 } else {
-		 arm_turntableA = 0;
-		 arm_turntableB = 0;
-		 pros::screen::print(TEXT_LARGE, 1,"centered");
-		 isDoingStuff_UD = false;
-	 }
-
-	 //check in x dimension - doesn't currently work
-	 if (nutral_mogii[0].x_middle_coord > 8 && !isDoingStuff_RO){ //NOTE: 10 may be too small a number. Check w/ testing
-		 crane_rotate = 50; //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 2,"arm going right");
-		 isDoingStuff_RO = true;
-	 } if (nutral_mogii[0].x_middle_coord < -8 && !isDoingStuff_RO) {
-		 crane_rotate = -50; //NOTE: check if this is moving in the right direction
-		 pros::screen::print(TEXT_LARGE, 2,"arm going left");
-		 isDoingStuff_RO = true;
-	 } else {
-		 crane_rotate = 0;
-		 pros::screen::print(TEXT_LARGE, 2,"centered");
-		 isDoingStuff_RO = false;
-	 }
-
-	 pros::delay(15);
-
+	 setParams();
+	 CalculateErrorAmounts();
+   MoveMotors();
+	 pros::delay(10);
    }
 }
 
+/////////////////////
 
 //awp selection
 bool pressed = false;
@@ -88,36 +161,13 @@ bool pressed = false;
 void on_center_button() {
 	pressed = !pressed;
 	if (pressed) {
-		pros::lcd::print(4, "AWP-B selected (on line)");
+		pros::lcd::print(4, "Autonomous Targeting");
 	} else {
-		pros::lcd::print(4, "AWP-A selected (ramp)");
+		pros::lcd::print(4, "Manual Targeting");
 	}
-
-	//helper struct
-	struct control {
-		struct {
-			int x = 0;
-			int y = 0;
-		} left;
-		struct {
-			int x = 0;
-			int y = 0;
-		} right;
-	} position;
-
-	//define drive motor speed variables by side
-	int right_speed = 0;
-	int left_speed = 0;
-
-	//define controller variables
-	int right_x;
-	int right_y;
-	int left_x;
-	int left_y;
-	int controller_reversed = -1;
-	bool a_pressed = false;
 }
 
+/////////////////////
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -128,7 +178,6 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	//set mtr brake modes
-	jaw.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	arm_turntableA.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 	arm_turntableB.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
@@ -165,44 +214,9 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-		//awp-b variables
-		int right_move = 2800;
-		int left_move = 2550;
-
-		int right_speed = 90;
-		int left_speed = 90;
-
-		if (pressed){
-			//awp b
-			//move to goal
-			right_back_mtr.move_relative(right_move, right_speed);
-			right_front_mtr.move_relative(right_move, right_speed);
-			left_back_mtr.move_relative(left_move, left_speed);
-			left_front_mtr.move_relative(left_move, left_speed);
-			pros::delay(2500);
-
-			//rotate crane over the goal
-			crane_rotate.move_relative(-800, 90);
-			pros::delay(1000);
-
-			//release the rings from jaw
-			jaw.tare_position();
-			jaw.move_absolute(550, 60);
-			pros::delay(1000);
-			jaw.move_absolute(-450, 60);
-			pros::delay(1000);
-
-		} else {
-			vision_test();
-			//awp A
-			//release preload rings into the goal
-			// jaw.tare_position();
-			// jaw.move_absolute(550, 60);
-			// pros::delay(1000);
-			// jaw.move_absolute(-450, 60);
-			// pros::delay(1000);
-		}
+  vision_test();
 }
+
 //I hate this robot so much. you dont understand.
 //and people say I dont comment my code
 /**
@@ -225,18 +239,19 @@ void opcontrol() {
 	int left_y;
 	int left_x;
 
+  //tare trigger pos for single-shot
+  trigger.tare_position();
+
+  //if the trigger is in the act of firing
+  bool isFiring = false;
+
+  //initialize lcd for prints
 	pros::lcd::initialize();
 
 	//limiter variables
 	crane_rotate.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 	arm_turntableA.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-	jaw.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 
-	//toggle variables
-	bool a_pressed = true;
-
-	//set the jaw's current pos as 0
-	jaw.tare_position();
 
 	while(true){
 
@@ -247,19 +262,7 @@ void opcontrol() {
 		left_x = master.get_analog(ANALOG_LEFT_X);
 
 		//get bumper presses
-		bool left_front_bumper = master.get_digital(DIGITAL_L1);
-		bool left_back_bumper = master.get_digital(DIGITAL_L2);
-
-		//print stick inputs - debug
-		pros::lcd::print(0, "right x: %d", right_x);
-		pros::lcd::print(1, "right y: %d", right_y);
-
-		pros::lcd::print(2, "left x: %d", left_x);
-		pros::lcd::print(3, "left y: %d", left_y);
-
-		//print motor power - debug
-		pros::lcd::print(5, "right motors: %d", right_y - right_x);
-		pros::lcd::print(6, "left motors: %d", right_y + right_x);
+		bool right_front_bumper = master.get_digital(DIGITAL_R1);
 
 		//one-stick tank steer
 		float motor_mult = 1.5; //motor speed multiplier
@@ -295,12 +298,18 @@ void opcontrol() {
 		arm_turntableA = 0.8 * left_y;
 		arm_turntableB = 0.8 * left_y;
 
-	  if (left_front_bumper) {
-			jaw.move_absolute(0, 100);
-	  }else if (left_back_bumper) {
-	  	jaw.move_absolute(175, 100);
+    //firing modes
+	  if (right_front_bumper && isFiring == false) { //single shot
+			trigger.move_relative(-900, 127);
+      isFiring = true;
+      pros::delay(450);
 	  }
-
+    else if (!right_front_bumper && isFiring){
+      isFiring = false;
+    }
+    if (master.get_digital(DIGITAL_A)){
+      trigger.move_absolute(0, -127);
+    }
 		pros::delay(20);
 	}
 }
